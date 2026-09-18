@@ -276,7 +276,7 @@
     <section id="start">
       <div class="eyebrow">EngiMind</div>
       <h1>Dev Fundamentals Quiz</h1>
-      <p class="lede">40 questions on Claude Code, Git &amp; GitHub, the terminal, and clean-code practices. Pick your categories, pick a length, and go.</p>
+      <p class="lede">60 questions on Claude Code, Git &amp; GitHub, the terminal, and clean-code practices — freshly shuffled (questions and answer order) every time you play. Pick your categories, pick a length, and go.</p>
 
       <div class="resume-banner" id="resume-banner" hidden>
         <div class="resume-text" id="resume-text"></div>
@@ -287,10 +287,10 @@
       </div>
 
       <div class="cats" id="cats">
-        <label class="cat-card"><input type="checkbox" value="claude" checked><span><span class="label">Claude Code</span><span class="count">10 questions</span></span></label>
-        <label class="cat-card"><input type="checkbox" value="git" checked><span><span class="label">Git &amp; GitHub</span><span class="count">10 questions</span></span></label>
-        <label class="cat-card"><input type="checkbox" value="terminal" checked><span><span class="label">Terminal</span><span class="count">10 questions</span></span></label>
-        <label class="cat-card"><input type="checkbox" value="clean" checked><span><span class="label">Clean Code</span><span class="count">10 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="claude" checked><span><span class="label">Claude Code</span><span class="count">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="git" checked><span><span class="label">Git &amp; GitHub</span><span class="count">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="terminal" checked><span><span class="label">Terminal</span><span class="count">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="clean" checked><span><span class="label">Clean Code</span><span class="count">15 questions</span></span></label>
       </div>
 
       <div class="field-block">
@@ -373,7 +373,12 @@
       {q:"What is an MCP server, in the context of Claude Code?", opts:["A Minecraft plugin server","A Model Context Protocol server that exposes external tools or data sources Claude can call","A backup mail server for notifications","A type of Git remote"], a:1, d:"hard", ex:"MCP (Model Context Protocol) servers let Claude Code connect to external tools, APIs, and data sources through a standard interface."},
       {q:"Where do teams typically store project-specific instructions and context for Claude Code?", opts:["package.json","CLAUDE.md",".gitignore","settings.ini"], a:1, d:"easy", ex:"CLAUDE.md is the conventional file for persistent, project-specific guidance that Claude Code reads for context."},
       {q:"What does a Claude Code \"plugin\" bundle together?", opts:["Only slash commands, nothing else","Skills, subagents, slash commands, hooks, output styles, and MCP server definitions as one installable unit","A single CSS theme file","Only MCP servers"], a:1, d:"hard", ex:"A plugin is a versioned bundle that can ship multiple extension types together so they install and update as one unit."},
-      {q:"Which command lets you check current context window usage in a session?", opts:["/usage","/context","/memory","/tokens"], a:1, d:"intermediate", ex:"/context reports how much of the context window is currently used, helping you decide when to compact."}
+      {q:"Which command lets you check current context window usage in a session?", opts:["/usage","/context","/memory","/tokens"], a:1, d:"intermediate", ex:"/context reports how much of the context window is currently used, helping you decide when to compact."},
+      {q:"What is a \"skill\" in Claude Code?", opts:["A packaged set of instructions for a particular kind of task, loaded when it's relevant","A required certification for using the CLI","A speed rating for how fast Claude responds","A theme for the terminal color scheme"], a:0, d:"easy", ex:"Skills bundle instructions for a recurring kind of task (like a deploy checklist or review process) so Claude can load them exactly when needed."},
+      {q:"Which file typically configures permissions, hooks, and other harness behavior for a project?", opts:["package.json","settings.json","hooks.yaml","permissions.md"], a:1, d:"easy", ex:"settings.json (project or user level) is where permission rules, hooks, and environment configuration for Claude Code live."},
+      {q:"What is the purpose of the /security-review command?", opts:["To restart the Claude Code session","To scan pending code changes for security vulnerabilities before they're merged","To reset all file permissions to default","To encrypt the local repository"], a:1, d:"intermediate", ex:"/security-review analyzes the current diff for common security issues, similar to /code-review but focused on vulnerabilities."},
+      {q:"In Claude Code's permission system, what does an \"auto-accept\" style mode generally control?", opts:["Whether Claude automatically writes commit messages","Whether tool calls run without prompting the user for approval each time","Whether the terminal theme switches automatically","Whether context is compacted automatically"], a:1, d:"intermediate", ex:"Permission modes govern how much a session can do without stopping to ask — from prompting on every risky action to running more autonomously."},
+      {q:"What distinguishes a subagent's context window from the main conversation's?", opts:["It's identical and fully shared with the main conversation","It's a separate, isolated context window used for a delegated task, keeping the main conversation's context clean","It has no memory at all, even during its own task","It can only be used for reading files, never writing them"], a:1, d:"hard", ex:"Because a subagent gets its own isolated context, it can do research or multi-step work without filling up the main session's context window."}
     ],
     git: [
       {q:"What is a \"commit\" in Git?", opts:["A request to delete a branch","A snapshot of your project's changes saved to the repository history","A live sync between two remote servers","A GitHub-only feature with no local equivalent"], a:1, d:"easy", ex:"Each commit captures the state of your files at that moment, building a traceable project history."},
@@ -385,7 +390,12 @@
       {q:"What does a .gitignore file do?", opts:["Lists commit messages to reject","Specifies files and patterns that Git should not track or stage","Encrypts sensitive files automatically","Blocks specific GitHub users from a repo"], a:1, d:"easy", ex:"Patterns in .gitignore (like node_modules/ or .env) tell Git to leave matching files untracked."},
       {q:"What is \"GitHub Flow\"?", opts:["A diagramming tool built into GitHub","A lightweight workflow: branch, commit, open a pull request, review, then merge to main","A paid GitHub subscription tier","A CI/CD pipeline exclusive to Actions"], a:1, d:"hard", ex:"GitHub Flow is a simple branch-per-feature workflow well suited to continuous delivery."},
       {q:"Which command stages changes so they're included in the next commit?", opts:["git stage-all","git commit --stage","git add","git track"], a:2, d:"easy", ex:"git add moves changes from the working directory into the staging area, ready to be committed."},
-      {q:"What is a \"fork\" on GitHub?", opts:["A temporary branch that auto-deletes after 24 hours","A personal copy of someone else's repository under your own account, so you can change it independently","A tool for merging two unrelated repositories","A type of GitHub Action trigger"], a:1, d:"intermediate", ex:"Forking creates your own copy of a repo, commonly used to contribute to projects you don't have write access to."}
+      {q:"What is a \"fork\" on GitHub?", opts:["A temporary branch that auto-deletes after 24 hours","A personal copy of someone else's repository under your own account, so you can change it independently","A tool for merging two unrelated repositories","A type of GitHub Action trigger"], a:1, d:"intermediate", ex:"Forking creates your own copy of a repo, commonly used to contribute to projects you don't have write access to."},
+      {q:"What does git status show?", opts:["A list of all commits ever made","The state of the working directory and staging area — modified, staged, and untracked files","The remote server's uptime","A graph of contributor activity"], a:1, d:"easy", ex:"git status is the everyday command for checking what's changed and what's staged before committing."},
+      {q:"What is a \"remote\" in Git?", opts:["A keyboard shortcut for switching branches","A version of your repository hosted elsewhere, like on GitHub, that you can push to or pull from","A file that lists banned contributors","A local-only backup folder"], a:1, d:"easy", ex:"origin is the default name for the remote a repo was cloned from; you can push local commits to it or pull others' changes from it."},
+      {q:"What does git rebase do, in contrast to git merge?", opts:["It deletes the target branch entirely","It replays your branch's commits on top of another branch, producing a linear history instead of a merge commit","It only works on remote branches, never local ones","It automatically resolves all conflicts with no input"], a:1, d:"hard", ex:"Rebasing rewrites commit history to appear as if your changes were made on top of the latest target branch, avoiding an extra merge commit."},
+      {q:"What is a \"draft\" pull request?", opts:["A pull request that has already been merged","A pull request marked as not ready for review or merging, used to share work-in-progress","A pull request only visible to repository owners","A pull request that can never be merged"], a:1, d:"intermediate", ex:"Draft PRs let you open the conversation and run CI early while signaling the work isn't finished yet."},
+      {q:"What does git cherry-pick do?", opts:["Deletes a specific commit from history","Applies the changes from a specific commit on another branch onto your current branch","Picks a random file to stage","Renames a branch"], a:1, d:"hard", ex:"Cherry-picking lets you bring over one specific commit's changes without merging the entire branch it came from."}
     ],
     terminal: [
       {q:"What does the pwd command print?", opts:["A list of installed packages","The full path of the current working directory","The current user's password hash","The permissions of the current folder"], a:1, d:"easy", ex:"pwd stands for \"print working directory\" and shows where you currently are in the filesystem."},
@@ -397,7 +407,12 @@
       {q:"What does the pipe operator | do in the terminal?", opts:["Comments out the rest of the line","Runs two unrelated commands in parallel with no connection","Sends the output of one command as input to the next command","Redirects output to a file only"], a:2, d:"hard", ex:"Piping chains commands together, e.g. cat file.log | grep error, so data flows from one to the next."},
       {q:"Why is rm -rf considered risky?", opts:["It only works on Windows","It recursively and forcibly deletes files/directories with no confirmation, which can permanently destroy data if misused","It renames files instead of deleting them","It requires an internet connection to run"], a:1, d:"hard", ex:"-r deletes recursively and -f skips confirmation prompts, so a wrong path can wipe out data with no undo."},
       {q:"What does the cat command do?", opts:["Displays the contents of a file in the terminal","Compiles source code","Checks disk space usage","Lists active network connections"], a:0, d:"easy", ex:"cat (short for \"concatenate\") prints one or more files' contents to standard output."},
-      {q:"What does the top (or ps) command show?", opts:["A list of recently deleted files","Currently running processes and their resource usage","The contents of the clipboard","A history of terminal commands you've typed"], a:1, d:"hard", ex:"top and ps report live information about running processes, including CPU and memory usage."}
+      {q:"What does the top (or ps) command show?", opts:["A list of recently deleted files","Currently running processes and their resource usage","The contents of the clipboard","A history of terminal commands you've typed"], a:1, d:"hard", ex:"top and ps report live information about running processes, including CPU and memory usage."},
+      {q:"What does the man command do?", opts:["Deletes a file permanently","Displays the manual page (documentation) for another command","Lists all logged-in users","Compresses a directory"], a:1, d:"easy", ex:"man <command> opens that command's reference manual — e.g. man grep explains every grep option."},
+      {q:"What does the echo command do?", opts:["Repeats the last command you ran","Prints text to standard output","Records terminal audio","Copies a file to a new location"], a:1, d:"easy", ex:"echo simply prints its arguments, commonly used to display a message or a variable's value."},
+      {q:"What does > do when used after a command, e.g. ls > files.txt?", opts:["Pipes the output into another command","Redirects the command's output into a file, overwriting it","Compares two files for differences","Runs the command in the background"], a:1, d:"intermediate", ex:"> redirects standard output to a file, replacing its existing contents."},
+      {q:"What does the history command show in the terminal?", opts:["A list of previously run commands in the current session","A timeline of file modification dates","The system's boot log","A list of installed applications"], a:0, d:"intermediate", ex:"history lets you review (and often re-run, e.g. with !42) commands you've typed earlier in the session."},
+      {q:"What's the difference between > and >> in redirection?", opts:["They are functionally identical","> overwrites the target file; >> appends to the end of it instead","> works only with text files; >> works only with binaries","> is for input; >> is for output"], a:1, d:"hard", ex:"Use > when you want a fresh file each time, and >> when you want to keep adding to an existing one, like a running log."}
     ],
     clean: [
       {q:"What does the DRY principle stand for?", opts:["Design Rarely, Yield often","Don't Repeat Yourself","Data Rules Yearly","Debug Right Yesterday"], a:1, d:"easy", ex:"DRY encourages extracting repeated logic into a single reusable function or module instead of duplicating it."},
@@ -409,7 +424,12 @@
       {q:"What is \"refactoring\"?", opts:["Adding new features to an application","Restructuring existing code to improve its readability or design without changing its external behavior","Rewriting code in a different programming language","Deleting unused files from a repository"], a:1, d:"easy", ex:"Refactoring improves internal structure while keeping observable behavior the same — ideally backed by tests."},
       {q:"What is a \"unit test\"?", opts:["A test that checks an entire application end-to-end through the UI","A test that verifies a small, isolated piece of code, like a single function, behaves correctly","A manual QA checklist run before release","A test that only checks server uptime"], a:1, d:"hard", ex:"Unit tests target small, isolated pieces of logic, making failures fast to locate and fix."},
       {q:"What does YAGNI stand for?", opts:["Yield And Get Nothing Immediately","You Aren't Gonna Need It — avoid building functionality before it's actually needed","Yes, Add New Interfaces","Your API Grows, Not Improves"], a:1, d:"hard", ex:"YAGNI discourages speculative features or abstractions built for hypothetical future requirements that may never arrive."},
-      {q:"Why is version control considered a coding best practice?", opts:["It automatically fixes bugs in your code","It tracks history, enables collaboration, and lets you revert to previous working states","It replaces the need for testing","It is only useful for large teams, never solo projects"], a:1, d:"hard", ex:"Version control (like Git) gives you a safety net and a collaboration mechanism, regardless of project size."}
+      {q:"Why is version control considered a coding best practice?", opts:["It automatically fixes bugs in your code","It tracks history, enables collaboration, and lets you revert to previous working states","It replaces the need for testing","It is only useful for large teams, never solo projects"], a:1, d:"hard", ex:"Version control (like Git) gives you a safety net and a collaboration mechanism, regardless of project size."},
+      {q:"What does \"readable code\" primarily optimize for?", opts:["Making the compiler run as fast as possible","Being easy for humans, not just the computer, to understand and maintain","Using the fewest characters possible","Avoiding the use of functions"], a:1, d:"easy", ex:"Code is read far more often than it's written; optimizing for a human reader pays off every time someone revisits it."},
+      {q:"What is \"technical debt\"?", opts:["Money owed to a software vendor","The implied cost of extra future rework caused by choosing a quick or easy solution now instead of a better one","A penalty charged for late code deployments","A type of licensing fee for open-source libraries"], a:1, d:"easy", ex:"Like financial debt, technical debt can be taken on deliberately, but it accrues \"interest\" in the form of harder future changes if left unpaid."},
+      {q:"What is \"code review\"?", opts:["An automated tool that rewrites code for you","A process where other developers examine proposed changes before they're merged, to catch bugs and share knowledge","A yearly performance evaluation for engineers","A tool that measures how many lines of code were written"], a:1, d:"intermediate", ex:"Code review (often via a pull request) catches issues early and spreads context about the change across the team."},
+      {q:"What does \"separation of concerns\" mean?", opts:["Splitting a team into separate departments","Structuring code so different responsibilities live in different, loosely coupled parts","Writing all code in a single large file for simplicity","Avoiding comments so concerns don't clutter the code"], a:1, d:"intermediate", ex:"Keeping distinct responsibilities — like data access, business logic, and display — apart makes each part easier to change independently."},
+      {q:"Why is premature optimization generally discouraged?", opts:["Optimization is always unnecessary","It spends effort optimizing code before knowing where the actual performance bottlenecks are, often adding complexity for little benefit","Compilers already optimize everything perfectly","It makes code run slower in every case"], a:1, d:"hard", ex:"The common advice is to write clear code first, measure actual performance, and then optimize the parts that are proven to matter."}
     ]
   };
 
@@ -478,12 +498,18 @@
     el.poolHint.textContent = available + " question" + (available === 1 ? "" : "s") + " match this setup — quiz will use " + lenLabel + ".";
   }
 
+  function shuffleOptions(opts, correctIdx){
+    var order = shuffle(opts.map(function(_, i){ return i; }));
+    return { opts: order.map(function(i){ return opts[i]; }), a: order.indexOf(correctIdx) };
+  }
+
   function buildPool(cats, len, difficulty){
     var pool = [];
     cats.forEach(function(c){
       (QUESTIONS[c] || []).forEach(function(item){
         if (difficulty !== "mixed" && item.d !== difficulty) return;
-        pool.push({ cat: c, q: item.q, opts: item.opts, a: item.a, d: item.d, ex: item.ex });
+        var shuffled = shuffleOptions(item.opts, item.a);
+        pool.push({ cat: c, q: item.q, opts: shuffled.opts, a: shuffled.a, d: item.d, ex: item.ex });
       });
     });
     pool = shuffle(pool);
