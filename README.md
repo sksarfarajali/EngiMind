@@ -7,7 +7,7 @@ A single-page, self-contained quiz app for testing knowledge of four developer f
 - **Terminal** — navigation, file permissions, search, process inspection
 - **Clean Code** — DRY, KISS, single responsibility, refactoring, testing, YAGNI
 
-60 questions total (15 per category, tagged Easy/Intermediate/Hard), each with instant feedback and a short explanation. Pick which categories, difficulty, and length to play — question order and answer-choice order are freshly shuffled on every attempt. You can leave and resume an in-progress quiz at any time, and review your per-category breakdown and missed answers at the end.
+60 questions total (15 per category, tagged Easy/Intermediate/Hard), each with instant feedback and a short explanation. Pick which categories, difficulty, and length to play — question order and answer-choice order are freshly shuffled on every attempt. Every question is available in **English and Bengali (বাংলা)**, switchable with one tap at any point, including mid-quiz. You can leave and resume an in-progress quiz at any time, and review your per-category breakdown and missed answers at the end.
 
 ## Run it
 

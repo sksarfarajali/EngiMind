@@ -267,6 +267,7 @@
     <div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
     <button class="home-btn" id="home-btn" type="button" hidden>&larr; Home</button>
     <div class="path mono" id="path-label">engimind@quiz:~$ start</div>
+    <button class="theme-toggle" id="lang-toggle" type="button">বাংলা</button>
     <button class="theme-toggle" id="theme-toggle" type="button">theme</button>
   </div>
 
@@ -275,8 +276,8 @@
     <!-- START -->
     <section id="start">
       <div class="eyebrow">EngiMind</div>
-      <h1>Dev Fundamentals Quiz</h1>
-      <p class="lede">60 questions on Claude Code, Git &amp; GitHub, the terminal, and clean-code practices — freshly shuffled (questions and answer order) every time you play. Pick your categories, pick a length, and go.</p>
+      <h1 id="t-title">Dev Fundamentals Quiz</h1>
+      <p class="lede" id="t-lede">60 questions on Claude Code, Git &amp; GitHub, the terminal, and clean-code practices — freshly shuffled (questions and answer order) every time you play. Pick your categories, pick a length, and go.</p>
 
       <div class="resume-banner" id="resume-banner" hidden>
         <div class="resume-text" id="resume-text"></div>
@@ -287,28 +288,28 @@
       </div>
 
       <div class="cats" id="cats">
-        <label class="cat-card"><input type="checkbox" value="claude" checked><span><span class="label">Claude Code</span><span class="count">15 questions</span></span></label>
-        <label class="cat-card"><input type="checkbox" value="git" checked><span><span class="label">Git &amp; GitHub</span><span class="count">15 questions</span></span></label>
-        <label class="cat-card"><input type="checkbox" value="terminal" checked><span><span class="label">Terminal</span><span class="count">15 questions</span></span></label>
-        <label class="cat-card"><input type="checkbox" value="clean" checked><span><span class="label">Clean Code</span><span class="count">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="claude" checked><span><span class="label" id="t-cat-claude">Claude Code</span><span class="count" id="t-count-claude">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="git" checked><span><span class="label" id="t-cat-git">Git &amp; GitHub</span><span class="count" id="t-count-git">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="terminal" checked><span><span class="label" id="t-cat-terminal">Terminal</span><span class="count" id="t-count-terminal">15 questions</span></span></label>
+        <label class="cat-card"><input type="checkbox" value="clean" checked><span><span class="label" id="t-cat-clean">Clean Code</span><span class="count" id="t-count-clean">15 questions</span></span></label>
       </div>
 
       <div class="field-block">
-        <span class="field-label">Difficulty</span>
+        <span class="field-label" id="t-diff-label">Difficulty</span>
         <div class="length-group diff-group" id="difficulty-group">
-          <button class="chip diff-easy" data-diff="easy">Easy</button>
-          <button class="chip diff-intermediate" data-diff="intermediate">Intermediate</button>
-          <button class="chip diff-hard" data-diff="hard">Hard</button>
-          <button class="chip active" data-diff="mixed">Mixed</button>
+          <button class="chip diff-easy" data-diff="easy" id="t-diff-easy">Easy</button>
+          <button class="chip diff-intermediate" data-diff="intermediate" id="t-diff-intermediate">Intermediate</button>
+          <button class="chip diff-hard" data-diff="hard" id="t-diff-hard">Hard</button>
+          <button class="chip active" data-diff="mixed" id="t-diff-mixed">Mixed</button>
         </div>
       </div>
 
       <div class="row">
-        <span style="font-size:13px; color:var(--muted);">Quiz length</span>
+        <span style="font-size:13px; color:var(--muted);" id="t-length-label">Quiz length</span>
         <div class="length-group" id="length-group">
           <button class="chip" data-len="10">10</button>
           <button class="chip" data-len="20">20</button>
-          <button class="chip active" data-len="all">All</button>
+          <button class="chip active" data-len="all" id="t-len-all">All</button>
         </div>
       </div>
       <div class="pool-hint mono" id="pool-hint"></div>
@@ -356,88 +357,1543 @@
 
   </div>
 </div>
-<footer class="credit">EngiMind · built with Claude Code</footer>
+<footer class="credit" id="t-footer">EngiMind · built with Claude Code</footer>
 
 <script>
 (function(){
   "use strict";
 
   var QUESTIONS = {
-    claude: [
-      {q:"In Claude Code, what is a \"slash command\"?", opts:["A prompt template you invoke by typing /<name> in the chat","A keyboard shortcut for switching terminal tabs","A type of Git branch naming convention","A CSS selector used in the settings UI"], a:0, d:"easy", ex:"Slash commands (like /init or /review) are typed at the start of a message and insert a prompt template or trigger a built-in action."},
-      {q:"Which built-in slash command generates a CLAUDE.md file documenting your codebase?", opts:["/docs","/init","/build","/scan"], a:1, d:"easy", ex:"/init inspects the repo and writes a CLAUDE.md with project-specific context for future sessions."},
-      {q:"What best describes \"hooks\" in Claude Code?", opts:["Visual themes for the terminal UI","Shortcuts for renaming files","Deterministic scripts that fire automatically at defined lifecycle events, like before a tool runs","A way to bookmark chat messages"], a:2, d:"intermediate", ex:"Hooks are automatic commands (command, http, prompt, or agent handlers) triggered by lifecycle events such as a tool call or session start — no manual typing required."},
-      {q:"What is a \"subagent\" used for in Claude Code?", opts:["Formatting code automatically on save","A delegated, isolated agent loop with its own context window for a specific task","A backup copy of your git history","A linter plugin for JavaScript"], a:1, d:"hard", ex:"Subagents are spawned when a task needs its own separate context window, not just a different prompt — useful for research or isolated multi-step work."},
-      {q:"Which slash command is used to review the current diff or pending changes for bugs?", opts:["/diff-check","/code-review","/lint","/patch"], a:1, d:"easy", ex:"/code-review (also available as /review) analyzes the current changes and reports correctness issues."},
-      {q:"What does the /compact command do?", opts:["Deletes old commits from the repo","Minifies JavaScript files in the project","Compresses and summarizes the conversation to free up context window space","Shrinks image assets automatically"], a:2, d:"intermediate", ex:"/compact summarizes prior conversation so a long session can continue without running out of context."},
-      {q:"What is an MCP server, in the context of Claude Code?", opts:["A Minecraft plugin server","A Model Context Protocol server that exposes external tools or data sources Claude can call","A backup mail server for notifications","A type of Git remote"], a:1, d:"hard", ex:"MCP (Model Context Protocol) servers let Claude Code connect to external tools, APIs, and data sources through a standard interface."},
-      {q:"Where do teams typically store project-specific instructions and context for Claude Code?", opts:["package.json","CLAUDE.md",".gitignore","settings.ini"], a:1, d:"easy", ex:"CLAUDE.md is the conventional file for persistent, project-specific guidance that Claude Code reads for context."},
-      {q:"What does a Claude Code \"plugin\" bundle together?", opts:["Only slash commands, nothing else","Skills, subagents, slash commands, hooks, output styles, and MCP server definitions as one installable unit","A single CSS theme file","Only MCP servers"], a:1, d:"hard", ex:"A plugin is a versioned bundle that can ship multiple extension types together so they install and update as one unit."},
-      {q:"Which command lets you check current context window usage in a session?", opts:["/usage","/context","/memory","/tokens"], a:1, d:"intermediate", ex:"/context reports how much of the context window is currently used, helping you decide when to compact."},
-      {q:"What is a \"skill\" in Claude Code?", opts:["A packaged set of instructions for a particular kind of task, loaded when it's relevant","A required certification for using the CLI","A speed rating for how fast Claude responds","A theme for the terminal color scheme"], a:0, d:"easy", ex:"Skills bundle instructions for a recurring kind of task (like a deploy checklist or review process) so Claude can load them exactly when needed."},
-      {q:"Which file typically configures permissions, hooks, and other harness behavior for a project?", opts:["package.json","settings.json","hooks.yaml","permissions.md"], a:1, d:"easy", ex:"settings.json (project or user level) is where permission rules, hooks, and environment configuration for Claude Code live."},
-      {q:"What is the purpose of the /security-review command?", opts:["To restart the Claude Code session","To scan pending code changes for security vulnerabilities before they're merged","To reset all file permissions to default","To encrypt the local repository"], a:1, d:"intermediate", ex:"/security-review analyzes the current diff for common security issues, similar to /code-review but focused on vulnerabilities."},
-      {q:"In Claude Code's permission system, what does an \"auto-accept\" style mode generally control?", opts:["Whether Claude automatically writes commit messages","Whether tool calls run without prompting the user for approval each time","Whether the terminal theme switches automatically","Whether context is compacted automatically"], a:1, d:"intermediate", ex:"Permission modes govern how much a session can do without stopping to ask — from prompting on every risky action to running more autonomously."},
-      {q:"What distinguishes a subagent's context window from the main conversation's?", opts:["It's identical and fully shared with the main conversation","It's a separate, isolated context window used for a delegated task, keeping the main conversation's context clean","It has no memory at all, even during its own task","It can only be used for reading files, never writing them"], a:1, d:"hard", ex:"Because a subagent gets its own isolated context, it can do research or multi-step work without filling up the main session's context window."}
+    "claude": [
+      {
+        "d": "easy",
+        "a": 0,
+        "en": {
+          "q": "In Claude Code, what is a \"slash command\"?",
+          "opts": [
+            "A prompt template you invoke by typing /<name> in the chat",
+            "A keyboard shortcut for switching terminal tabs",
+            "A type of Git branch naming convention",
+            "A CSS selector used in the settings UI"
+          ],
+          "ex": "Slash commands (like /init or /review) are typed at the start of a message and insert a prompt template or trigger a built-in action."
+        },
+        "bn": {
+          "q": "Claude Code-এ \"স্ল্যাশ কমান্ড\" (slash command) কী?",
+          "opts": [
+            "চ্যাটে /<name> টাইপ করে ব্যবহার করা একটি প্রম্পট টেমপ্লেট",
+            "টার্মিনাল ট্যাব পরিবর্তনের একটি কিবোর্ড শর্টকাট",
+            "Git ব্রাঞ্চের নামকরণের একটি রীতি",
+            "সেটিংস UI-তে ব্যবহৃত একটি CSS সিলেক্টর"
+          ],
+          "ex": "স্ল্যাশ কমান্ড (যেমন /init বা /review) মেসেজের শুরুতে টাইপ করা হয় এবং এটি একটি প্রম্পট টেমপ্লেট যোগ করে বা একটি বিল্ট-ইন অ্যাকশন চালু করে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "Which built-in slash command generates a CLAUDE.md file documenting your codebase?",
+          "opts": [
+            "/docs",
+            "/init",
+            "/build",
+            "/scan"
+          ],
+          "ex": "/init inspects the repo and writes a CLAUDE.md with project-specific context for future sessions."
+        },
+        "bn": {
+          "q": "কোন বিল্ট-ইন স্ল্যাশ কমান্ড আপনার কোডবেস ডকুমেন্ট করে একটি CLAUDE.md ফাইল তৈরি করে?",
+          "opts": [
+            "/docs",
+            "/init",
+            "/build",
+            "/scan"
+          ],
+          "ex": "/init রিপো পরীক্ষা করে এবং ভবিষ্যতের সেশনের জন্য প্রজেক্ট-নির্দিষ্ট প্রসঙ্গসহ একটি CLAUDE.md ফাইল লেখে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 2,
+        "en": {
+          "q": "What best describes \"hooks\" in Claude Code?",
+          "opts": [
+            "Visual themes for the terminal UI",
+            "Shortcuts for renaming files",
+            "Deterministic scripts that fire automatically at defined lifecycle events, like before a tool runs",
+            "A way to bookmark chat messages"
+          ],
+          "ex": "Hooks are automatic commands (command, http, prompt, or agent handlers) triggered by lifecycle events such as a tool call or session start — no manual typing required."
+        },
+        "bn": {
+          "q": "Claude Code-এ \"হুকস\" (hooks) বলতে সবচেয়ে ভালোভাবে কী বোঝায়?",
+          "opts": [
+            "টার্মিনাল UI-এর ভিজ্যুয়াল থিম",
+            "ফাইলের নাম পরিবর্তনের শর্টকাট",
+            "নির্দিষ্ট লাইফসাইকেল ইভেন্টে (যেমন কোনো টুল চালানোর আগে) স্বয়ংক্রিয়ভাবে চালু হওয়া নির্দিষ্ট স্ক্রিপ্ট",
+            "চ্যাট মেসেজ বুকমার্ক করার একটি উপায়"
+          ],
+          "ex": "হুকস হলো স্বয়ংক্রিয় কমান্ড (command, http, prompt, বা agent হ্যান্ডলার) যা টুল কল বা সেশন শুরু হওয়ার মতো লাইফসাইকেল ইভেন্টে চালু হয় — আলাদা করে টাইপ করার দরকার হয় না।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What is a \"subagent\" used for in Claude Code?",
+          "opts": [
+            "Formatting code automatically on save",
+            "A delegated, isolated agent loop with its own context window for a specific task",
+            "A backup copy of your git history",
+            "A linter plugin for JavaScript"
+          ],
+          "ex": "Subagents are spawned when a task needs its own separate context window, not just a different prompt — useful for research or isolated multi-step work."
+        },
+        "bn": {
+          "q": "Claude Code-এ \"সাবএজেন্ট\" (subagent) কী কাজে ব্যবহৃত হয়?",
+          "opts": [
+            "সেভ করার সময় স্বয়ংক্রিয়ভাবে কোড ফরম্যাট করা",
+            "একটি নির্দিষ্ট কাজের জন্য নিজস্ব কনটেক্সট উইন্ডোসহ পৃথক, দায়িত্বপ্রাপ্ত এজেন্ট লুপ",
+            "আপনার git হিস্ট্রির একটি ব্যাকআপ কপি",
+            "JavaScript-এর একটি লিন্টার প্লাগইন"
+          ],
+          "ex": "যখন কোনো কাজের জন্য শুধু আলাদা প্রম্পট নয়, বরং সম্পূর্ণ আলাদা কনটেক্সট উইন্ডো দরকার হয়, তখন সাবএজেন্ট চালু করা হয় — গবেষণা বা পৃথক বহু-ধাপের কাজের জন্য এটি উপযোগী।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "Which slash command is used to review the current diff or pending changes for bugs?",
+          "opts": [
+            "/diff-check",
+            "/code-review",
+            "/lint",
+            "/patch"
+          ],
+          "ex": "/code-review (also available as /review) analyzes the current changes and reports correctness issues."
+        },
+        "bn": {
+          "q": "বর্তমান ডিফ বা পেন্ডিং পরিবর্তনগুলোতে বাগ খুঁজতে কোন স্ল্যাশ কমান্ড ব্যবহৃত হয়?",
+          "opts": [
+            "/diff-check",
+            "/code-review",
+            "/lint",
+            "/patch"
+          ],
+          "ex": "/code-review (যা /review নামেও পাওয়া যায়) বর্তমান পরিবর্তনগুলো বিশ্লেষণ করে এবং সঠিকতা-সংক্রান্ত সমস্যা রিপোর্ট করে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 2,
+        "en": {
+          "q": "What does the /compact command do?",
+          "opts": [
+            "Deletes old commits from the repo",
+            "Minifies JavaScript files in the project",
+            "Compresses and summarizes the conversation to free up context window space",
+            "Shrinks image assets automatically"
+          ],
+          "ex": "/compact summarizes prior conversation so a long session can continue without running out of context."
+        },
+        "bn": {
+          "q": "/compact কমান্ডটি কী করে?",
+          "opts": [
+            "রিপো থেকে পুরনো কমিট মুছে ফেলে",
+            "প্রজেক্টের JavaScript ফাইল মিনিফাই করে",
+            "কনটেক্সট উইন্ডোর জায়গা খালি করতে কথোপকথন সংক্ষিপ্ত ও সারাংশ করে",
+            "স্বয়ংক্রিয়ভাবে ছবির সাইজ ছোট করে"
+          ],
+          "ex": "/compact আগের কথোপকথনের সারাংশ তৈরি করে, যাতে দীর্ঘ সেশন কনটেক্সট শেষ না হয়ে চলতে পারে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What is an MCP server, in the context of Claude Code?",
+          "opts": [
+            "A Minecraft plugin server",
+            "A Model Context Protocol server that exposes external tools or data sources Claude can call",
+            "A backup mail server for notifications",
+            "A type of Git remote"
+          ],
+          "ex": "MCP (Model Context Protocol) servers let Claude Code connect to external tools, APIs, and data sources through a standard interface."
+        },
+        "bn": {
+          "q": "Claude Code-এর প্রসঙ্গে MCP সার্ভার কী?",
+          "opts": [
+            "একটি Minecraft প্লাগইন সার্ভার",
+            "একটি Model Context Protocol সার্ভার, যা Claude-কে বাহ্যিক টুল বা ডেটা সোর্স ব্যবহার করার সুযোগ দেয়",
+            "নোটিফিকেশনের জন্য একটি ব্যাকআপ মেইল সার্ভার",
+            "এক ধরনের Git রিমোট"
+          ],
+          "ex": "MCP (Model Context Protocol) সার্ভার Claude Code-কে একটি স্ট্যান্ডার্ড ইন্টারফেসের মাধ্যমে বাহ্যিক টুল, API এবং ডেটা সোর্সের সাথে সংযুক্ত হতে দেয়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "Where do teams typically store project-specific instructions and context for Claude Code?",
+          "opts": [
+            "package.json",
+            "CLAUDE.md",
+            ".gitignore",
+            "settings.ini"
+          ],
+          "ex": "CLAUDE.md is the conventional file for persistent, project-specific guidance that Claude Code reads for context."
+        },
+        "bn": {
+          "q": "Claude Code-এর জন্য প্রজেক্ট-নির্দিষ্ট নির্দেশনা ও প্রসঙ্গ সাধারণত কোথায় রাখা হয়?",
+          "opts": [
+            "package.json",
+            "CLAUDE.md",
+            ".gitignore",
+            "settings.ini"
+          ],
+          "ex": "CLAUDE.md হলো প্রথাগত ফাইল, যেখানে প্রজেক্ট-নির্দিষ্ট, স্থায়ী নির্দেশনা রাখা হয় এবং Claude Code প্রসঙ্গের জন্য এটি পড়ে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What does a Claude Code \"plugin\" bundle together?",
+          "opts": [
+            "Only slash commands, nothing else",
+            "Skills, subagents, slash commands, hooks, output styles, and MCP server definitions as one installable unit",
+            "A single CSS theme file",
+            "Only MCP servers"
+          ],
+          "ex": "A plugin is a versioned bundle that can ship multiple extension types together so they install and update as one unit."
+        },
+        "bn": {
+          "q": "Claude Code-এর একটি \"প্লাগইন\" একসাথে কী কী বান্ডেল করে?",
+          "opts": [
+            "শুধুই স্ল্যাশ কমান্ড, আর কিছু নয়",
+            "স্কিল, সাবএজেন্ট, স্ল্যাশ কমান্ড, হুকস, আউটপুট স্টাইল এবং MCP সার্ভার ডেফিনিশন — সব একটি ইনস্টলযোগ্য ইউনিটে",
+            "শুধু একটি CSS থিম ফাইল",
+            "শুধুই MCP সার্ভার"
+          ],
+          "ex": "একটি প্লাগইন হলো একটি ভার্সন-নিয়ন্ত্রিত বান্ডেল, যা একাধিক ধরনের এক্সটেনশন একসাথে সরবরাহ করে, ফলে সেগুলো একটি ইউনিট হিসেবে ইনস্টল ও আপডেট হয়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "Which command lets you check current context window usage in a session?",
+          "opts": [
+            "/usage",
+            "/context",
+            "/memory",
+            "/tokens"
+          ],
+          "ex": "/context reports how much of the context window is currently used, helping you decide when to compact."
+        },
+        "bn": {
+          "q": "কোন কমান্ড দিয়ে একটি সেশনে বর্তমান কনটেক্সট উইন্ডো ব্যবহারের পরিমাণ দেখা যায়?",
+          "opts": [
+            "/usage",
+            "/context",
+            "/memory",
+            "/tokens"
+          ],
+          "ex": "/context বর্তমানে কনটেক্সট উইন্ডোর কতটুকু ব্যবহৃত হয়েছে তা জানায়, যা কখন compact করবেন তা বুঝতে সাহায্য করে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 0,
+        "en": {
+          "q": "What is a \"skill\" in Claude Code?",
+          "opts": [
+            "A packaged set of instructions for a particular kind of task, loaded when it's relevant",
+            "A required certification for using the CLI",
+            "A speed rating for how fast Claude responds",
+            "A theme for the terminal color scheme"
+          ],
+          "ex": "Skills bundle instructions for a recurring kind of task (like a deploy checklist or review process) so Claude can load them exactly when needed."
+        },
+        "bn": {
+          "q": "Claude Code-এ \"স্কিল\" (skill) কী?",
+          "opts": [
+            "নির্দিষ্ট ধরনের কাজের জন্য একগুচ্ছ নির্দেশনা, যা প্রাসঙ্গিক হলে লোড হয়",
+            "CLI ব্যবহারের জন্য বাধ্যতামূলক একটি সার্টিফিকেশন",
+            "Claude কত দ্রুত উত্তর দেয় তার একটি রেটিং",
+            "টার্মিনালের কালার স্কিমের একটি থিম"
+          ],
+          "ex": "স্কিল একটি পুনরাবৃত্তিমূলক কাজের (যেমন ডিপ্লয় চেকলিস্ট বা রিভিউ প্রক্রিয়া) জন্য নির্দেশনা একত্র করে রাখে, যাতে প্রয়োজনের সময় Claude ঠিক সেটি লোড করতে পারে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "Which file typically configures permissions, hooks, and other harness behavior for a project?",
+          "opts": [
+            "package.json",
+            "settings.json",
+            "hooks.yaml",
+            "permissions.md"
+          ],
+          "ex": "settings.json (project or user level) is where permission rules, hooks, and environment configuration for Claude Code live."
+        },
+        "bn": {
+          "q": "একটি প্রজেক্টের জন্য পারমিশন, হুকস এবং অন্যান্য হার্নেস আচরণ সাধারণত কোন ফাইলে কনফিগার করা হয়?",
+          "opts": [
+            "package.json",
+            "settings.json",
+            "hooks.yaml",
+            "permissions.md"
+          ],
+          "ex": "settings.json (প্রজেক্ট বা ইউজার লেভেলে) হলো সেই ফাইল, যেখানে Claude Code-এর পারমিশন নিয়ম, হুকস এবং এনভায়রনমেন্ট কনফিগারেশন থাকে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is the purpose of the /security-review command?",
+          "opts": [
+            "To restart the Claude Code session",
+            "To scan pending code changes for security vulnerabilities before they're merged",
+            "To reset all file permissions to default",
+            "To encrypt the local repository"
+          ],
+          "ex": "/security-review analyzes the current diff for common security issues, similar to /code-review but focused on vulnerabilities."
+        },
+        "bn": {
+          "q": "/security-review কমান্ডের উদ্দেশ্য কী?",
+          "opts": [
+            "Claude Code সেশন পুনরায় চালু করা",
+            "মার্জ করার আগে পেন্ডিং কোড পরিবর্তনে নিরাপত্তা দুর্বলতা খুঁজে বের করা",
+            "সব ফাইল পারমিশন ডিফল্টে রিসেট করা",
+            "লোকাল রিপোজিটরি এনক্রিপ্ট করা"
+          ],
+          "ex": "/security-review বর্তমান ডিফ বিশ্লেষণ করে সাধারণ নিরাপত্তা সমস্যা খুঁজে বের করে — অনেকটা /code-review-এর মতো, তবে দুর্বলতার ওপর কেন্দ্রীভূত।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "In Claude Code's permission system, what does an \"auto-accept\" style mode generally control?",
+          "opts": [
+            "Whether Claude automatically writes commit messages",
+            "Whether tool calls run without prompting the user for approval each time",
+            "Whether the terminal theme switches automatically",
+            "Whether context is compacted automatically"
+          ],
+          "ex": "Permission modes govern how much a session can do without stopping to ask — from prompting on every risky action to running more autonomously."
+        },
+        "bn": {
+          "q": "Claude Code-এর পারমিশন সিস্টেমে \"auto-accept\" ধরনের মোড সাধারণত কী নিয়ন্ত্রণ করে?",
+          "opts": [
+            "Claude স্বয়ংক্রিয়ভাবে কমিট মেসেজ লেখে কি না",
+            "প্রতিবার অনুমতি না চেয়ে টুল কল চালানো হয় কি না",
+            "টার্মিনালের থিম স্বয়ংক্রিয়ভাবে পরিবর্তিত হয় কি না",
+            "কনটেক্সট স্বয়ংক্রিয়ভাবে compact হয় কি না"
+          ],
+          "ex": "পারমিশন মোড নির্ধারণ করে একটি সেশন থেমে অনুমতি না চেয়ে কতটুকু করতে পারবে — ঝুঁকিপূর্ণ প্রতিটি কাজে জিজ্ঞাসা করা থেকে শুরু করে আরও স্বাধীনভাবে চলা পর্যন্ত।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What distinguishes a subagent's context window from the main conversation's?",
+          "opts": [
+            "It's identical and fully shared with the main conversation",
+            "It's a separate, isolated context window used for a delegated task, keeping the main conversation's context clean",
+            "It has no memory at all, even during its own task",
+            "It can only be used for reading files, never writing them"
+          ],
+          "ex": "Because a subagent gets its own isolated context, it can do research or multi-step work without filling up the main session's context window."
+        },
+        "bn": {
+          "q": "একটি সাবএজেন্টের কনটেক্সট উইন্ডো মূল কথোপকথনের কনটেক্সট থেকে কীভাবে আলাদা?",
+          "opts": [
+            "এটি হুবহু একই এবং মূল কথোপকথনের সাথে সম্পূর্ণ শেয়ার করা",
+            "এটি একটি পৃথক, পৃথকীকৃত কনটেক্সট উইন্ডো, যা একটি নির্দিষ্ট কাজের জন্য ব্যবহৃত হয় এবং মূল কথোপকথনের কনটেক্সট পরিষ্কার রাখে",
+            "কাজ চলাকালীনও এর কোনো মেমরি থাকে না",
+            "এটি শুধু ফাইল পড়তে পারে, লিখতে পারে না"
+          ],
+          "ex": "সাবএজেন্ট নিজস্ব পৃথক কনটেক্সট পায় বলে এটি মূল সেশনের কনটেক্সট উইন্ডো পূর্ণ না করেই গবেষণা বা বহু-ধাপের কাজ করতে পারে।"
+        }
+      }
     ],
-    git: [
-      {q:"What is a \"commit\" in Git?", opts:["A request to delete a branch","A snapshot of your project's changes saved to the repository history","A live sync between two remote servers","A GitHub-only feature with no local equivalent"], a:1, d:"easy", ex:"Each commit captures the state of your files at that moment, building a traceable project history."},
-      {q:"Which command creates a new branch and switches to it in a single step?", opts:["git branch -m <name>","git checkout -b <name>","git merge <name>","git log --branch <name>"], a:1, d:"intermediate", ex:"git checkout -b <name> (or the newer git switch -c <name>) creates and checks out a branch in one command."},
-      {q:"What is a \"pull request\" on GitHub?", opts:["A request to download the entire repository","A proposal to merge changes from one branch into another, opened for review before merging","A command that force-pushes to main","An automatic backup of your local commits"], a:1, d:"intermediate", ex:"Pull requests let collaborators discuss and review a set of changes before they're merged into the target branch."},
-      {q:"What does git clone do?", opts:["Deletes a remote repository","Copies a remote repository, including its full history, to your local machine","Creates a duplicate branch in the same repo","Compresses your repository into a zip file"], a:1, d:"easy", ex:"git clone downloads a full copy of a repository (history included) and sets up the remote for you."},
-      {q:"What's the key difference between git fetch and git pull?", opts:["They are exactly the same command","fetch downloads changes without merging them; pull fetches and then merges into your current branch","fetch only works on GitHub, pull only works locally","pull deletes remote branches, fetch does not"], a:1, d:"hard", ex:"git fetch updates your local view of the remote without touching your working branch; git pull does that plus a merge (or rebase)."},
-      {q:"What is a \"merge conflict\"?", opts:["A GitHub billing error","When two people star the same repository","When Git can't automatically reconcile changes to the same lines and needs manual resolution","A warning shown when a commit message is too long"], a:2, d:"hard", ex:"Conflicts happen when overlapping changes can't be auto-merged; you resolve them by editing the conflicted files and committing the result."},
-      {q:"What does a .gitignore file do?", opts:["Lists commit messages to reject","Specifies files and patterns that Git should not track or stage","Encrypts sensitive files automatically","Blocks specific GitHub users from a repo"], a:1, d:"easy", ex:"Patterns in .gitignore (like node_modules/ or .env) tell Git to leave matching files untracked."},
-      {q:"What is \"GitHub Flow\"?", opts:["A diagramming tool built into GitHub","A lightweight workflow: branch, commit, open a pull request, review, then merge to main","A paid GitHub subscription tier","A CI/CD pipeline exclusive to Actions"], a:1, d:"hard", ex:"GitHub Flow is a simple branch-per-feature workflow well suited to continuous delivery."},
-      {q:"Which command stages changes so they're included in the next commit?", opts:["git stage-all","git commit --stage","git add","git track"], a:2, d:"easy", ex:"git add moves changes from the working directory into the staging area, ready to be committed."},
-      {q:"What is a \"fork\" on GitHub?", opts:["A temporary branch that auto-deletes after 24 hours","A personal copy of someone else's repository under your own account, so you can change it independently","A tool for merging two unrelated repositories","A type of GitHub Action trigger"], a:1, d:"intermediate", ex:"Forking creates your own copy of a repo, commonly used to contribute to projects you don't have write access to."},
-      {q:"What does git status show?", opts:["A list of all commits ever made","The state of the working directory and staging area — modified, staged, and untracked files","The remote server's uptime","A graph of contributor activity"], a:1, d:"easy", ex:"git status is the everyday command for checking what's changed and what's staged before committing."},
-      {q:"What is a \"remote\" in Git?", opts:["A keyboard shortcut for switching branches","A version of your repository hosted elsewhere, like on GitHub, that you can push to or pull from","A file that lists banned contributors","A local-only backup folder"], a:1, d:"easy", ex:"origin is the default name for the remote a repo was cloned from; you can push local commits to it or pull others' changes from it."},
-      {q:"What does git rebase do, in contrast to git merge?", opts:["It deletes the target branch entirely","It replays your branch's commits on top of another branch, producing a linear history instead of a merge commit","It only works on remote branches, never local ones","It automatically resolves all conflicts with no input"], a:1, d:"hard", ex:"Rebasing rewrites commit history to appear as if your changes were made on top of the latest target branch, avoiding an extra merge commit."},
-      {q:"What is a \"draft\" pull request?", opts:["A pull request that has already been merged","A pull request marked as not ready for review or merging, used to share work-in-progress","A pull request only visible to repository owners","A pull request that can never be merged"], a:1, d:"intermediate", ex:"Draft PRs let you open the conversation and run CI early while signaling the work isn't finished yet."},
-      {q:"What does git cherry-pick do?", opts:["Deletes a specific commit from history","Applies the changes from a specific commit on another branch onto your current branch","Picks a random file to stage","Renames a branch"], a:1, d:"hard", ex:"Cherry-picking lets you bring over one specific commit's changes without merging the entire branch it came from."}
+    "git": [
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What is a \"commit\" in Git?",
+          "opts": [
+            "A request to delete a branch",
+            "A snapshot of your project's changes saved to the repository history",
+            "A live sync between two remote servers",
+            "A GitHub-only feature with no local equivalent"
+          ],
+          "ex": "Each commit captures the state of your files at that moment, building a traceable project history."
+        },
+        "bn": {
+          "q": "Git-এ \"কমিট\" (commit) কী?",
+          "opts": [
+            "একটি ব্রাঞ্চ মুছে ফেলার অনুরোধ",
+            "আপনার প্রজেক্টের পরিবর্তনের একটি স্ন্যাপশট, যা রিপোজিটরি হিস্ট্রিতে সংরক্ষিত হয়",
+            "দুটি রিমোট সার্ভারের মধ্যে লাইভ সিঙ্ক",
+            "শুধু GitHub-এর একটি ফিচার, যার কোনো লোকাল সমতুল্য নেই"
+          ],
+          "ex": "প্রতিটি কমিট সেই মুহূর্তে আপনার ফাইলগুলোর অবস্থা ধারণ করে, যা একটি অনুসরণযোগ্য প্রজেক্ট হিস্ট্রি তৈরি করে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "Which command creates a new branch and switches to it in a single step?",
+          "opts": [
+            "git branch -m <name>",
+            "git checkout -b <name>",
+            "git merge <name>",
+            "git log --branch <name>"
+          ],
+          "ex": "git checkout -b <name> (or the newer git switch -c <name>) creates and checks out a branch in one command."
+        },
+        "bn": {
+          "q": "কোন কমান্ড একই সাথে একটি নতুন ব্রাঞ্চ তৈরি করে এবং সেটিতে চলে যায়?",
+          "opts": [
+            "git branch -m <name>",
+            "git checkout -b <name>",
+            "git merge <name>",
+            "git log --branch <name>"
+          ],
+          "ex": "git checkout -b <name> (অথবা নতুন git switch -c <name>) একটি কমান্ডেই একটি ব্রাঞ্চ তৈরি করে এবং সেটিতে চেকআউট করে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is a \"pull request\" on GitHub?",
+          "opts": [
+            "A request to download the entire repository",
+            "A proposal to merge changes from one branch into another, opened for review before merging",
+            "A command that force-pushes to main",
+            "An automatic backup of your local commits"
+          ],
+          "ex": "Pull requests let collaborators discuss and review a set of changes before they're merged into the target branch."
+        },
+        "bn": {
+          "q": "GitHub-এ \"পুল রিকোয়েস্ট\" (pull request) কী?",
+          "opts": [
+            "সম্পূর্ণ রিপোজিটরি ডাউনলোড করার একটি অনুরোধ",
+            "একটি ব্রাঞ্চ থেকে অন্য ব্রাঞ্চে পরিবর্তন মার্জ করার প্রস্তাব, যা মার্জের আগে রিভিউয়ের জন্য খোলা হয়",
+            "main-এ force-push করার একটি কমান্ড",
+            "আপনার লোকাল কমিটের একটি স্বয়ংক্রিয় ব্যাকআপ"
+          ],
+          "ex": "পুল রিকোয়েস্টের মাধ্যমে সহযোগীরা টার্গেট ব্রাঞ্চে মার্জ হওয়ার আগে পরিবর্তনগুলো নিয়ে আলোচনা ও রিভিউ করতে পারে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does git clone do?",
+          "opts": [
+            "Deletes a remote repository",
+            "Copies a remote repository, including its full history, to your local machine",
+            "Creates a duplicate branch in the same repo",
+            "Compresses your repository into a zip file"
+          ],
+          "ex": "git clone downloads a full copy of a repository (history included) and sets up the remote for you."
+        },
+        "bn": {
+          "q": "git clone কী করে?",
+          "opts": [
+            "একটি রিমোট রিপোজিটরি মুছে ফেলে",
+            "একটি রিমোট রিপোজিটরি, তার সম্পূর্ণ হিস্ট্রিসহ, আপনার লোকাল মেশিনে কপি করে",
+            "একই রিপোতে একটি ডুপ্লিকেট ব্রাঞ্চ তৈরি করে",
+            "আপনার রিপোজিটরিকে একটি zip ফাইলে সংকুচিত করে"
+          ],
+          "ex": "git clone একটি রিপোজিটরির সম্পূর্ণ কপি (হিস্ট্রিসহ) ডাউনলোড করে এবং আপনার জন্য রিমোট সেট করে দেয়।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What's the key difference between git fetch and git pull?",
+          "opts": [
+            "They are exactly the same command",
+            "fetch downloads changes without merging them; pull fetches and then merges into your current branch",
+            "fetch only works on GitHub, pull only works locally",
+            "pull deletes remote branches, fetch does not"
+          ],
+          "ex": "git fetch updates your local view of the remote without touching your working branch; git pull does that plus a merge (or rebase)."
+        },
+        "bn": {
+          "q": "git fetch এবং git pull-এর মধ্যে মূল পার্থক্য কী?",
+          "opts": [
+            "দুটি হুবহু একই কমান্ড",
+            "fetch পরিবর্তনগুলো ডাউনলোড করে কিন্তু মার্জ করে না; pull ডাউনলোড করে এবং আপনার বর্তমান ব্রাঞ্চে মার্জও করে",
+            "fetch শুধু GitHub-এ কাজ করে, pull শুধু লোকালি কাজ করে",
+            "pull রিমোট ব্রাঞ্চ মুছে ফেলে, fetch মুছে না"
+          ],
+          "ex": "git fetch আপনার ওয়ার্কিং ব্রাঞ্চ স্পর্শ না করেই রিমোটের লোকাল ভিউ আপডেট করে; git pull তা করে এবং সাথে একটি মার্জ (বা রিবেস)-ও করে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 2,
+        "en": {
+          "q": "What is a \"merge conflict\"?",
+          "opts": [
+            "A GitHub billing error",
+            "When two people star the same repository",
+            "When Git can't automatically reconcile changes to the same lines and needs manual resolution",
+            "A warning shown when a commit message is too long"
+          ],
+          "ex": "Conflicts happen when overlapping changes can't be auto-merged; you resolve them by editing the conflicted files and committing the result."
+        },
+        "bn": {
+          "q": "\"মার্জ কনফ্লিক্ট\" (merge conflict) কী?",
+          "opts": [
+            "GitHub-এর একটি বিলিং ত্রুটি",
+            "দুজন ব্যবহারকারী একই রিপোজিটরিতে স্টার দিলে",
+            "যখন Git একই লাইনে করা পরিবর্তনগুলো স্বয়ংক্রিয়ভাবে মেলাতে পারে না এবং ম্যানুয়ালি সমাধান করতে হয়",
+            "কমিট মেসেজ খুব দীর্ঘ হলে দেখানো একটি সতর্কবার্তা"
+          ],
+          "ex": "একে অপরের সাথে ওভারল্যাপ করা পরিবর্তন স্বয়ংক্রিয়ভাবে মার্জ করা না গেলে কনফ্লিক্ট হয়; কনফ্লিক্ট হওয়া ফাইল এডিট করে এবং কমিট করে এটি সমাধান করা হয়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does a .gitignore file do?",
+          "opts": [
+            "Lists commit messages to reject",
+            "Specifies files and patterns that Git should not track or stage",
+            "Encrypts sensitive files automatically",
+            "Blocks specific GitHub users from a repo"
+          ],
+          "ex": "Patterns in .gitignore (like node_modules/ or .env) tell Git to leave matching files untracked."
+        },
+        "bn": {
+          "q": ".gitignore ফাইল কী কাজ করে?",
+          "opts": [
+            "প্রত্যাখ্যান করার মতো কমিট মেসেজের তালিকা রাখে",
+            "Git যেসব ফাইল ও প্যাটার্ন ট্র্যাক বা স্টেজ করবে না তা নির্দিষ্ট করে",
+            "স্পর্শকাতর ফাইল স্বয়ংক্রিয়ভাবে এনক্রিপ্ট করে",
+            "নির্দিষ্ট GitHub ব্যবহারকারীকে রিপো থেকে ব্লক করে"
+          ],
+          "ex": ".gitignore-এর প্যাটার্ন (যেমন node_modules/ বা .env) Git-কে জানিয়ে দেয় যে মিলে যাওয়া ফাইলগুলো ট্র্যাক না করতে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What is \"GitHub Flow\"?",
+          "opts": [
+            "A diagramming tool built into GitHub",
+            "A lightweight workflow: branch, commit, open a pull request, review, then merge to main",
+            "A paid GitHub subscription tier",
+            "A CI/CD pipeline exclusive to Actions"
+          ],
+          "ex": "GitHub Flow is a simple branch-per-feature workflow well suited to continuous delivery."
+        },
+        "bn": {
+          "q": "\"GitHub Flow\" কী?",
+          "opts": [
+            "GitHub-এ বিল্ট-ইন একটি ডায়াগ্রামিং টুল",
+            "একটি সহজ ওয়ার্কফ্লো: ব্রাঞ্চ তৈরি, কমিট, পুল রিকোয়েস্ট খোলা, রিভিউ, তারপর main-এ মার্জ",
+            "GitHub-এর একটি পেইড সাবস্ক্রিপশন স্তর",
+            "শুধু Actions-এর জন্য নির্দিষ্ট একটি CI/CD পাইপলাইন"
+          ],
+          "ex": "GitHub Flow হলো একটি সহজ, প্রতি-ফিচার-এক-ব্রাঞ্চ ওয়ার্কফ্লো, যা কন্টিনিউয়াস ডেলিভারির জন্য উপযোগী।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 2,
+        "en": {
+          "q": "Which command stages changes so they're included in the next commit?",
+          "opts": [
+            "git stage-all",
+            "git commit --stage",
+            "git add",
+            "git track"
+          ],
+          "ex": "git add moves changes from the working directory into the staging area, ready to be committed."
+        },
+        "bn": {
+          "q": "পরবর্তী কমিটে অন্তর্ভুক্ত করার জন্য কোন কমান্ড পরিবর্তনগুলো স্টেজ করে?",
+          "opts": [
+            "git stage-all",
+            "git commit --stage",
+            "git add",
+            "git track"
+          ],
+          "ex": "git add ওয়ার্কিং ডিরেক্টরি থেকে পরিবর্তনগুলো স্টেজিং এরিয়াতে নিয়ে যায়, যা কমিট করার জন্য প্রস্তুত।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is a \"fork\" on GitHub?",
+          "opts": [
+            "A temporary branch that auto-deletes after 24 hours",
+            "A personal copy of someone else's repository under your own account, so you can change it independently",
+            "A tool for merging two unrelated repositories",
+            "A type of GitHub Action trigger"
+          ],
+          "ex": "Forking creates your own copy of a repo, commonly used to contribute to projects you don't have write access to."
+        },
+        "bn": {
+          "q": "GitHub-এ \"ফর্ক\" (fork) কী?",
+          "opts": [
+            "একটি অস্থায়ী ব্রাঞ্চ, যা ২৪ ঘণ্টা পর স্বয়ংক্রিয়ভাবে মুছে যায়",
+            "অন্য কারও রিপোজিটরির একটি ব্যক্তিগত কপি আপনার নিজের অ্যাকাউন্টে, যাতে আপনি স্বাধীনভাবে পরিবর্তন করতে পারেন",
+            "দুটি সম্পর্কহীন রিপোজিটরি মার্জ করার একটি টুল",
+            "এক ধরনের GitHub Action ট্রিগার"
+          ],
+          "ex": "ফর্কিং একটি রিপোর নিজস্ব কপি তৈরি করে, যা সাধারণত এমন প্রজেক্টে অবদান রাখতে ব্যবহৃত হয় যেখানে আপনার write অ্যাক্সেস নেই।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does git status show?",
+          "opts": [
+            "A list of all commits ever made",
+            "The state of the working directory and staging area — modified, staged, and untracked files",
+            "The remote server's uptime",
+            "A graph of contributor activity"
+          ],
+          "ex": "git status is the everyday command for checking what's changed and what's staged before committing."
+        },
+        "bn": {
+          "q": "git status কী দেখায়?",
+          "opts": [
+            "এ পর্যন্ত করা সব কমিটের তালিকা",
+            "ওয়ার্কিং ডিরেক্টরি ও স্টেজিং এরিয়ার অবস্থা — পরিবর্তিত, স্টেজ করা এবং আনট্র্যাকড ফাইল",
+            "রিমোট সার্ভারের আপটাইম",
+            "অবদানকারীদের কার্যকলাপের একটি গ্রাফ"
+          ],
+          "ex": "কমিট করার আগে কী পরিবর্তন হয়েছে এবং কী স্টেজ করা হয়েছে তা দেখতে git status হলো নিত্যদিনের কমান্ড।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What is a \"remote\" in Git?",
+          "opts": [
+            "A keyboard shortcut for switching branches",
+            "A version of your repository hosted elsewhere, like on GitHub, that you can push to or pull from",
+            "A file that lists banned contributors",
+            "A local-only backup folder"
+          ],
+          "ex": "origin is the default name for the remote a repo was cloned from; you can push local commits to it or pull others' changes from it."
+        },
+        "bn": {
+          "q": "Git-এ \"রিমোট\" (remote) কী?",
+          "opts": [
+            "ব্রাঞ্চ পরিবর্তনের একটি কিবোর্ড শর্টকাট",
+            "আপনার রিপোজিটরির একটি সংস্করণ, যা অন্য কোথাও (যেমন GitHub-এ) হোস্ট করা এবং যেখানে push বা pull করা যায়",
+            "নিষিদ্ধ অবদানকারীদের একটি তালিকা রাখা ফাইল",
+            "শুধু লোকাল একটি ব্যাকআপ ফোল্ডার"
+          ],
+          "ex": "origin হলো যেখান থেকে রিপো ক্লোন করা হয়েছিল সেই রিমোটের ডিফল্ট নাম; আপনি এতে লোকাল কমিট push করতে পারেন বা অন্যদের পরিবর্তন pull করতে পারেন।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What does git rebase do, in contrast to git merge?",
+          "opts": [
+            "It deletes the target branch entirely",
+            "It replays your branch's commits on top of another branch, producing a linear history instead of a merge commit",
+            "It only works on remote branches, never local ones",
+            "It automatically resolves all conflicts with no input"
+          ],
+          "ex": "Rebasing rewrites commit history to appear as if your changes were made on top of the latest target branch, avoiding an extra merge commit."
+        },
+        "bn": {
+          "q": "git merge-এর বিপরীতে git rebase কী করে?",
+          "opts": [
+            "এটি টার্গেট ব্রাঞ্চ সম্পূর্ণ মুছে ফেলে",
+            "এটি আপনার ব্রাঞ্চের কমিটগুলো অন্য একটি ব্রাঞ্চের উপর পুনরায় প্রয়োগ করে, ফলে একটি মার্জ কমিটের বদলে একটি লিনিয়ার হিস্ট্রি তৈরি হয়",
+            "এটি শুধু রিমোট ব্রাঞ্চে কাজ করে, লোকাল ব্রাঞ্চে নয়",
+            "এটি কোনো ইনপুট ছাড়াই স্বয়ংক্রিয়ভাবে সব কনফ্লিক্ট সমাধান করে"
+          ],
+          "ex": "রিবেসিং কমিট হিস্ট্রি এমনভাবে পুনর্লিখন করে, যেন আপনার পরিবর্তনগুলো টার্গেট ব্রাঞ্চের সর্বশেষ অবস্থার উপর করা হয়েছে, ফলে অতিরিক্ত মার্জ কমিট এড়ানো যায়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is a \"draft\" pull request?",
+          "opts": [
+            "A pull request that has already been merged",
+            "A pull request marked as not ready for review or merging, used to share work-in-progress",
+            "A pull request only visible to repository owners",
+            "A pull request that can never be merged"
+          ],
+          "ex": "Draft PRs let you open the conversation and run CI early while signaling the work isn't finished yet."
+        },
+        "bn": {
+          "q": "একটি \"ড্রাফট\" (draft) পুল রিকোয়েস্ট কী?",
+          "opts": [
+            "একটি পুল রিকোয়েস্ট, যা ইতিমধ্যে মার্জ হয়ে গেছে",
+            "একটি পুল রিকোয়েস্ট, যা রিভিউ বা মার্জের জন্য প্রস্তুত নয় বলে চিহ্নিত, যা চলমান কাজ শেয়ার করতে ব্যবহৃত হয়",
+            "শুধু রিপোজিটরির মালিকরা দেখতে পান এমন একটি পুল রিকোয়েস্ট",
+            "এমন একটি পুল রিকোয়েস্ট, যা কখনো মার্জ করা যাবে না"
+          ],
+          "ex": "ড্রাফট PR আপনাকে কাজ শেষ হয়নি এটি জানিয়ে রেখেই আলোচনা শুরু করতে ও আগেভাগে CI চালাতে দেয়।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What does git cherry-pick do?",
+          "opts": [
+            "Deletes a specific commit from history",
+            "Applies the changes from a specific commit on another branch onto your current branch",
+            "Picks a random file to stage",
+            "Renames a branch"
+          ],
+          "ex": "Cherry-picking lets you bring over one specific commit's changes without merging the entire branch it came from."
+        },
+        "bn": {
+          "q": "git cherry-pick কী করে?",
+          "opts": [
+            "হিস্ট্রি থেকে একটি নির্দিষ্ট কমিট মুছে ফেলে",
+            "অন্য একটি ব্রাঞ্চের নির্দিষ্ট একটি কমিটের পরিবর্তন আপনার বর্তমান ব্রাঞ্চে প্রয়োগ করে",
+            "স্টেজ করার জন্য একটি র‍্যান্ডম ফাইল বেছে নেয়",
+            "একটি ব্রাঞ্চের নাম পরিবর্তন করে"
+          ],
+          "ex": "চেরি-পিক করার মাধ্যমে আপনি যেখান থেকে এসেছে সেই পুরো ব্রাঞ্চ মার্জ না করেই শুধু একটি নির্দিষ্ট কমিটের পরিবর্তন আনতে পারেন।"
+        }
+      }
     ],
-    terminal: [
-      {q:"What does the pwd command print?", opts:["A list of installed packages","The full path of the current working directory","The current user's password hash","The permissions of the current folder"], a:1, d:"easy", ex:"pwd stands for \"print working directory\" and shows where you currently are in the filesystem."},
-      {q:"Which flag makes ls also show hidden files (those starting with a dot)?", opts:["ls -a","ls -h","ls -x","ls -r"], a:0, d:"easy", ex:"ls -a lists all entries, including hidden dotfiles like .gitignore or .env."},
-      {q:"What does cd .. do?", opts:["Deletes the current directory","Copies the current directory","Moves up one level to the parent directory","Creates a directory named \"..\""], a:2, d:"easy", ex:"\"..\" refers to the parent directory, so cd .. moves you up one level in the folder tree."},
-      {q:"What does grep \"error\" file.log do?", opts:["Deletes every line containing \"error\"","Searches file.log and prints lines that contain \"error\"","Renames file.log to \"error\"","Counts the total lines in file.log"], a:1, d:"intermediate", ex:"grep searches text for a pattern and prints the matching lines — a core tool for scanning logs."},
-      {q:"What does chmod +x script.sh do?", opts:["Compresses script.sh","Makes script.sh executable","Deletes script.sh permanently","Moves script.sh to the trash"], a:1, d:"intermediate", ex:"chmod changes file permissions; +x adds the execute permission so the script can be run directly."},
-      {q:"What does mkdir -p a/b/c do?", opts:["Fails if folder \"a\" doesn't already exist","Creates nested folders a/b/c, creating any missing parent folders along the way","Deletes folders a, b, and c","Lists the contents of folder a/b/c"], a:1, d:"intermediate", ex:"The -p flag makes mkdir create all necessary parent directories instead of erroring out."},
-      {q:"What does the pipe operator | do in the terminal?", opts:["Comments out the rest of the line","Runs two unrelated commands in parallel with no connection","Sends the output of one command as input to the next command","Redirects output to a file only"], a:2, d:"hard", ex:"Piping chains commands together, e.g. cat file.log | grep error, so data flows from one to the next."},
-      {q:"Why is rm -rf considered risky?", opts:["It only works on Windows","It recursively and forcibly deletes files/directories with no confirmation, which can permanently destroy data if misused","It renames files instead of deleting them","It requires an internet connection to run"], a:1, d:"hard", ex:"-r deletes recursively and -f skips confirmation prompts, so a wrong path can wipe out data with no undo."},
-      {q:"What does the cat command do?", opts:["Displays the contents of a file in the terminal","Compiles source code","Checks disk space usage","Lists active network connections"], a:0, d:"easy", ex:"cat (short for \"concatenate\") prints one or more files' contents to standard output."},
-      {q:"What does the top (or ps) command show?", opts:["A list of recently deleted files","Currently running processes and their resource usage","The contents of the clipboard","A history of terminal commands you've typed"], a:1, d:"hard", ex:"top and ps report live information about running processes, including CPU and memory usage."},
-      {q:"What does the man command do?", opts:["Deletes a file permanently","Displays the manual page (documentation) for another command","Lists all logged-in users","Compresses a directory"], a:1, d:"easy", ex:"man <command> opens that command's reference manual — e.g. man grep explains every grep option."},
-      {q:"What does the echo command do?", opts:["Repeats the last command you ran","Prints text to standard output","Records terminal audio","Copies a file to a new location"], a:1, d:"easy", ex:"echo simply prints its arguments, commonly used to display a message or a variable's value."},
-      {q:"What does > do when used after a command, e.g. ls > files.txt?", opts:["Pipes the output into another command","Redirects the command's output into a file, overwriting it","Compares two files for differences","Runs the command in the background"], a:1, d:"intermediate", ex:"> redirects standard output to a file, replacing its existing contents."},
-      {q:"What does the history command show in the terminal?", opts:["A list of previously run commands in the current session","A timeline of file modification dates","The system's boot log","A list of installed applications"], a:0, d:"intermediate", ex:"history lets you review (and often re-run, e.g. with !42) commands you've typed earlier in the session."},
-      {q:"What's the difference between > and >> in redirection?", opts:["They are functionally identical","> overwrites the target file; >> appends to the end of it instead","> works only with text files; >> works only with binaries","> is for input; >> is for output"], a:1, d:"hard", ex:"Use > when you want a fresh file each time, and >> when you want to keep adding to an existing one, like a running log."}
+    "terminal": [
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does the pwd command print?",
+          "opts": [
+            "A list of installed packages",
+            "The full path of the current working directory",
+            "The current user's password hash",
+            "The permissions of the current folder"
+          ],
+          "ex": "pwd stands for \"print working directory\" and shows where you currently are in the filesystem."
+        },
+        "bn": {
+          "q": "pwd কমান্ড কী প্রিন্ট করে?",
+          "opts": [
+            "ইনস্টল করা প্যাকেজের তালিকা",
+            "বর্তমান ওয়ার্কিং ডিরেক্টরির সম্পূর্ণ পাথ",
+            "বর্তমান ইউজারের পাসওয়ার্ড হ্যাশ",
+            "বর্তমান ফোল্ডারের পারমিশন"
+          ],
+          "ex": "pwd মানে \"print working directory\" — এটি ফাইলসিস্টেমে আপনি বর্তমানে কোথায় আছেন তা দেখায়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 0,
+        "en": {
+          "q": "Which flag makes ls also show hidden files (those starting with a dot)?",
+          "opts": [
+            "ls -a",
+            "ls -h",
+            "ls -x",
+            "ls -r"
+          ],
+          "ex": "ls -a lists all entries, including hidden dotfiles like .gitignore or .env."
+        },
+        "bn": {
+          "q": "কোন ফ্ল্যাগ ব্যবহার করলে ls লুকানো ফাইলও (ডট দিয়ে শুরু হওয়া) দেখায়?",
+          "opts": [
+            "ls -a",
+            "ls -h",
+            "ls -x",
+            "ls -r"
+          ],
+          "ex": "ls -a .gitignore বা .env-এর মতো লুকানো ডট-ফাইলসহ সব এন্ট্রি তালিকাভুক্ত করে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 2,
+        "en": {
+          "q": "What does cd .. do?",
+          "opts": [
+            "Deletes the current directory",
+            "Copies the current directory",
+            "Moves up one level to the parent directory",
+            "Creates a directory named \"..\""
+          ],
+          "ex": "\"..\" refers to the parent directory, so cd .. moves you up one level in the folder tree."
+        },
+        "bn": {
+          "q": "cd .. কী করে?",
+          "opts": [
+            "বর্তমান ডিরেক্টরি মুছে ফেলে",
+            "বর্তমান ডিরেক্টরি কপি করে",
+            "এক ধাপ উপরে, প্যারেন্ট ডিরেক্টরিতে নিয়ে যায়",
+            "\"..\" নামে একটি ডিরেক্টরি তৈরি করে"
+          ],
+          "ex": "\"..\" প্যারেন্ট ডিরেক্টরিকে বোঝায়, তাই cd .. আপনাকে ফোল্ডার ট্রিতে এক ধাপ উপরে নিয়ে যায়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What does grep \"error\" file.log do?",
+          "opts": [
+            "Deletes every line containing \"error\"",
+            "Searches file.log and prints lines that contain \"error\"",
+            "Renames file.log to \"error\"",
+            "Counts the total lines in file.log"
+          ],
+          "ex": "grep searches text for a pattern and prints the matching lines — a core tool for scanning logs."
+        },
+        "bn": {
+          "q": "grep \"error\" file.log কমান্ডটি কী করে?",
+          "opts": [
+            "\"error\" থাকা প্রতিটি লাইন মুছে ফেলে",
+            "file.log অনুসন্ধান করে এবং \"error\" থাকা লাইনগুলো প্রিন্ট করে",
+            "file.log-এর নাম পরিবর্তন করে \"error\" রাখে",
+            "file.log-এর মোট লাইন সংখ্যা গণনা করে"
+          ],
+          "ex": "grep টেক্সটে একটি প্যাটার্ন খোঁজে এবং মিলে যাওয়া লাইনগুলো প্রিন্ট করে — লগ স্ক্যান করার একটি মূল টুল।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What does chmod +x script.sh do?",
+          "opts": [
+            "Compresses script.sh",
+            "Makes script.sh executable",
+            "Deletes script.sh permanently",
+            "Moves script.sh to the trash"
+          ],
+          "ex": "chmod changes file permissions; +x adds the execute permission so the script can be run directly."
+        },
+        "bn": {
+          "q": "chmod +x script.sh কী করে?",
+          "opts": [
+            "script.sh সংকুচিত করে",
+            "script.sh-কে এক্সিকিউটেবল (চালানোর যোগ্য) করে",
+            "script.sh স্থায়ীভাবে মুছে ফেলে",
+            "script.sh ট্র্যাশে সরিয়ে দেয়"
+          ],
+          "ex": "chmod ফাইলের পারমিশন পরিবর্তন করে; +x এক্সিকিউট পারমিশন যোগ করে, ফলে স্ক্রিপ্টটি সরাসরি চালানো যায়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What does mkdir -p a/b/c do?",
+          "opts": [
+            "Fails if folder \"a\" doesn't already exist",
+            "Creates nested folders a/b/c, creating any missing parent folders along the way",
+            "Deletes folders a, b, and c",
+            "Lists the contents of folder a/b/c"
+          ],
+          "ex": "The -p flag makes mkdir create all necessary parent directories instead of erroring out."
+        },
+        "bn": {
+          "q": "mkdir -p a/b/c কী করে?",
+          "opts": [
+            "\"a\" ফোল্ডার আগে থেকে না থাকলে ব্যর্থ হয়",
+            "a/b/c নেস্টেড ফোল্ডার তৈরি করে, পথের মধ্যে অনুপস্থিত প্যারেন্ট ফোল্ডারগুলোও তৈরি করে",
+            "a, b এবং c ফোল্ডার মুছে ফেলে",
+            "a/b/c ফোল্ডারের বিষয়বস্তু তালিকাভুক্ত করে"
+          ],
+          "ex": "-p ফ্ল্যাগ mkdir-কে এরর না দেখিয়ে প্রয়োজনীয় সব প্যারেন্ট ডিরেক্টরি তৈরি করতে বাধ্য করে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 2,
+        "en": {
+          "q": "What does the pipe operator | do in the terminal?",
+          "opts": [
+            "Comments out the rest of the line",
+            "Runs two unrelated commands in parallel with no connection",
+            "Sends the output of one command as input to the next command",
+            "Redirects output to a file only"
+          ],
+          "ex": "Piping chains commands together, e.g. cat file.log | grep error, so data flows from one to the next."
+        },
+        "bn": {
+          "q": "টার্মিনালে পাইপ অপারেটর | কী করে?",
+          "opts": [
+            "লাইনের বাকি অংশ কমেন্ট করে দেয়",
+            "কোনো সংযোগ ছাড়াই দুটি ভিন্ন কমান্ড একসাথে চালায়",
+            "একটি কমান্ডের আউটপুট পরের কমান্ডের ইনপুট হিসেবে পাঠায়",
+            "শুধু আউটপুটকে একটি ফাইলে রিডাইরেক্ট করে"
+          ],
+          "ex": "পাইপিং কমান্ডগুলোকে একসাথে চেইন করে, যেমন cat file.log | grep error, ফলে ডেটা একটি থেকে আরেকটিতে প্রবাহিত হয়।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "Why is rm -rf considered risky?",
+          "opts": [
+            "It only works on Windows",
+            "It recursively and forcibly deletes files/directories with no confirmation, which can permanently destroy data if misused",
+            "It renames files instead of deleting them",
+            "It requires an internet connection to run"
+          ],
+          "ex": "-r deletes recursively and -f skips confirmation prompts, so a wrong path can wipe out data with no undo."
+        },
+        "bn": {
+          "q": "rm -rf কে কেন ঝুঁকিপূর্ণ মনে করা হয়?",
+          "opts": [
+            "এটি শুধু Windows-এ কাজ করে",
+            "এটি কোনো নিশ্চিতকরণ ছাড়াই পুনরাবৃত্তভাবে ও জোরপূর্বক ফাইল/ডিরেক্টরি মুছে ফেলে, যা ভুলভাবে ব্যবহার করলে স্থায়ীভাবে ডেটা নষ্ট করতে পারে",
+            "এটি ফাইল মুছে না দিয়ে নাম পরিবর্তন করে",
+            "এটি চালাতে ইন্টারনেট সংযোগ প্রয়োজন"
+          ],
+          "ex": "-r পুনরাবৃত্তভাবে মুছে ফেলে এবং -f নিশ্চিতকরণ বার্তা এড়িয়ে যায়, তাই ভুল পাথে চালালে কোনো undo ছাড়াই ডেটা মুছে যেতে পারে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 0,
+        "en": {
+          "q": "What does the cat command do?",
+          "opts": [
+            "Displays the contents of a file in the terminal",
+            "Compiles source code",
+            "Checks disk space usage",
+            "Lists active network connections"
+          ],
+          "ex": "cat (short for \"concatenate\") prints one or more files' contents to standard output."
+        },
+        "bn": {
+          "q": "cat কমান্ড কী করে?",
+          "opts": [
+            "টার্মিনালে একটি ফাইলের বিষয়বস্তু দেখায়",
+            "সোর্স কোড কম্পাইল করে",
+            "ডিস্কের স্পেস ব্যবহার পরীক্ষা করে",
+            "সক্রিয় নেটওয়ার্ক সংযোগের তালিকা দেখায়"
+          ],
+          "ex": "cat (\"concatenate\"-এর সংক্ষিপ্ত রূপ) এক বা একাধিক ফাইলের বিষয়বস্তু স্ট্যান্ডার্ড আউটপুটে প্রিন্ট করে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What does the top (or ps) command show?",
+          "opts": [
+            "A list of recently deleted files",
+            "Currently running processes and their resource usage",
+            "The contents of the clipboard",
+            "A history of terminal commands you've typed"
+          ],
+          "ex": "top and ps report live information about running processes, including CPU and memory usage."
+        },
+        "bn": {
+          "q": "top (বা ps) কমান্ড কী দেখায়?",
+          "opts": [
+            "সম্প্রতি মুছে ফেলা ফাইলের তালিকা",
+            "বর্তমানে চলমান প্রসেস এবং তাদের রিসোর্স ব্যবহার",
+            "ক্লিপবোর্ডের বিষয়বস্তু",
+            "আপনার টাইপ করা টার্মিনাল কমান্ডের হিস্ট্রি"
+          ],
+          "ex": "top এবং ps চলমান প্রসেস সম্পর্কে লাইভ তথ্য দেয়, যার মধ্যে CPU ও মেমরি ব্যবহার অন্তর্ভুক্ত।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does the man command do?",
+          "opts": [
+            "Deletes a file permanently",
+            "Displays the manual page (documentation) for another command",
+            "Lists all logged-in users",
+            "Compresses a directory"
+          ],
+          "ex": "man <command> opens that command's reference manual — e.g. man grep explains every grep option."
+        },
+        "bn": {
+          "q": "man কমান্ড কী করে?",
+          "opts": [
+            "একটি ফাইল স্থায়ীভাবে মুছে ফেলে",
+            "অন্য একটি কমান্ডের ম্যানুয়াল পেজ (ডকুমেন্টেশন) দেখায়",
+            "লগ-ইন করা সব ব্যবহারকারীর তালিকা দেখায়",
+            "একটি ডিরেক্টরি সংকুচিত করে"
+          ],
+          "ex": "man <command> সেই কমান্ডের রেফারেন্স ম্যানুয়াল খোলে — যেমন man grep, grep-এর প্রতিটি অপশন ব্যাখ্যা করে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does the echo command do?",
+          "opts": [
+            "Repeats the last command you ran",
+            "Prints text to standard output",
+            "Records terminal audio",
+            "Copies a file to a new location"
+          ],
+          "ex": "echo simply prints its arguments, commonly used to display a message or a variable's value."
+        },
+        "bn": {
+          "q": "echo কমান্ড কী করে?",
+          "opts": [
+            "আপনার চালানো সর্বশেষ কমান্ড পুনরাবৃত্তি করে",
+            "স্ট্যান্ডার্ড আউটপুটে টেক্সট প্রিন্ট করে",
+            "টার্মিনালের অডিও রেকর্ড করে",
+            "একটি ফাইল নতুন জায়গায় কপি করে"
+          ],
+          "ex": "echo শুধু তার আর্গুমেন্টগুলো প্রিন্ট করে, সাধারণত একটি মেসেজ বা ভ্যারিয়েবলের মান দেখাতে ব্যবহৃত হয়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What does > do when used after a command, e.g. ls > files.txt?",
+          "opts": [
+            "Pipes the output into another command",
+            "Redirects the command's output into a file, overwriting it",
+            "Compares two files for differences",
+            "Runs the command in the background"
+          ],
+          "ex": "> redirects standard output to a file, replacing its existing contents."
+        },
+        "bn": {
+          "q": "কোনো কমান্ডের পরে > ব্যবহার করলে (যেমন ls > files.txt) এটি কী করে?",
+          "opts": [
+            "আউটপুটকে অন্য একটি কমান্ডে পাইপ করে",
+            "কমান্ডের আউটপুটকে একটি ফাইলে রিডাইরেক্ট করে, তার আগের বিষয়বস্তু ওভাররাইট করে",
+            "দুটি ফাইলের মধ্যে পার্থক্য তুলনা করে",
+            "কমান্ডটি ব্যাকগ্রাউন্ডে চালায়"
+          ],
+          "ex": "> স্ট্যান্ডার্ড আউটপুটকে একটি ফাইলে রিডাইরেক্ট করে, ফাইলের আগের বিষয়বস্তু প্রতিস্থাপন করে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 0,
+        "en": {
+          "q": "What does the history command show in the terminal?",
+          "opts": [
+            "A list of previously run commands in the current session",
+            "A timeline of file modification dates",
+            "The system's boot log",
+            "A list of installed applications"
+          ],
+          "ex": "history lets you review (and often re-run, e.g. with !42) commands you've typed earlier in the session."
+        },
+        "bn": {
+          "q": "টার্মিনালে history কমান্ড কী দেখায়?",
+          "opts": [
+            "বর্তমান সেশনে আগে চালানো কমান্ডগুলোর একটি তালিকা",
+            "ফাইল পরিবর্তনের তারিখের একটি টাইমলাইন",
+            "সিস্টেমের বুট লগ",
+            "ইনস্টল করা অ্যাপ্লিকেশনের তালিকা"
+          ],
+          "ex": "history আপনাকে সেশনে আগে টাইপ করা কমান্ড পর্যালোচনা (এবং প্রায়ই !42-এর মতো করে আবার চালাতে) দেয়।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What's the difference between > and >> in redirection?",
+          "opts": [
+            "They are functionally identical",
+            "> overwrites the target file; >> appends to the end of it instead",
+            "> works only with text files; >> works only with binaries",
+            "> is for input; >> is for output"
+          ],
+          "ex": "Use > when you want a fresh file each time, and >> when you want to keep adding to an existing one, like a running log."
+        },
+        "bn": {
+          "q": "রিডাইরেকশনে > এবং >>-এর মধ্যে পার্থক্য কী?",
+          "opts": [
+            "কার্যক্ষমতার দিক থেকে দুটি একই",
+            "> টার্গেট ফাইল ওভাররাইট করে; >> এর পরিবর্তে ফাইলের শেষে যোগ করে",
+            "> শুধু টেক্সট ফাইলের সাথে কাজ করে; >> শুধু বাইনারির সাথে",
+            "> ইনপুটের জন্য; >> আউটপুটের জন্য"
+          ],
+          "ex": "প্রতিবার নতুন ফাইল চাইলে > ব্যবহার করুন, আর কোনো চলমান লগের মতো বিদ্যমান ফাইলে যোগ করে যেতে চাইলে >> ব্যবহার করুন।"
+        }
+      }
     ],
-    clean: [
-      {q:"What does the DRY principle stand for?", opts:["Design Rarely, Yield often","Don't Repeat Yourself","Data Rules Yearly","Debug Right Yesterday"], a:1, d:"easy", ex:"DRY encourages extracting repeated logic into a single reusable function or module instead of duplicating it."},
-      {q:"What does KISS mean in the context of coding practice?", opts:["Keep It Simple, Stupid — favor the simplest solution that works","Keep Iterating, Stay Solid","Key Interfaces, Shared State","Kill Idle Server Sessions"], a:0, d:"easy", ex:"KISS reminds you to avoid unnecessary complexity, patterns, or abstractions when a simpler solution does the job."},
-      {q:"What is the \"Single Responsibility Principle\"?", opts:["Only one developer should ever touch a file","A function, class, or module should do one thing and have one reason to change","Every project should have a single main branch","Code should only ever call one external library"], a:1, d:"intermediate", ex:"Keeping each unit focused on one responsibility makes code easier to understand, test, and change safely."},
-      {q:"Why are meaningful variable and function names important?", opts:["They make the compiled binary smaller","They make code self-explanatory, reducing the need for extra comments to explain intent","They are required by all programming languages","They increase runtime performance"], a:1, d:"easy", ex:"Descriptive names (like totalPrice instead of x) let readers understand intent directly from the code."},
-      {q:"What is a \"code smell\"?", opts:["A compiler error that stops the build","A surface sign in code that usually points to a deeper design or maintainability problem","A type of code comment format","A security certificate warning"], a:1, d:"intermediate", ex:"Code smells (like duplicated logic or overly long functions) aren't bugs themselves, but they hint that refactoring may be needed."},
-      {q:"Why should comments generally explain \"why\" rather than \"what\"?", opts:["Comments explaining \"what\" are required by law in most style guides","Well-named, well-structured code already shows what it does, so comments are most valuable for non-obvious reasoning","\"Why\" comments compile faster","Comments should never be used at all"], a:1, d:"intermediate", ex:"If code needs a comment to explain what it does, clearer naming or structure is often the better fix; comments earn their place explaining non-obvious decisions."},
-      {q:"What is \"refactoring\"?", opts:["Adding new features to an application","Restructuring existing code to improve its readability or design without changing its external behavior","Rewriting code in a different programming language","Deleting unused files from a repository"], a:1, d:"easy", ex:"Refactoring improves internal structure while keeping observable behavior the same — ideally backed by tests."},
-      {q:"What is a \"unit test\"?", opts:["A test that checks an entire application end-to-end through the UI","A test that verifies a small, isolated piece of code, like a single function, behaves correctly","A manual QA checklist run before release","A test that only checks server uptime"], a:1, d:"hard", ex:"Unit tests target small, isolated pieces of logic, making failures fast to locate and fix."},
-      {q:"What does YAGNI stand for?", opts:["Yield And Get Nothing Immediately","You Aren't Gonna Need It — avoid building functionality before it's actually needed","Yes, Add New Interfaces","Your API Grows, Not Improves"], a:1, d:"hard", ex:"YAGNI discourages speculative features or abstractions built for hypothetical future requirements that may never arrive."},
-      {q:"Why is version control considered a coding best practice?", opts:["It automatically fixes bugs in your code","It tracks history, enables collaboration, and lets you revert to previous working states","It replaces the need for testing","It is only useful for large teams, never solo projects"], a:1, d:"hard", ex:"Version control (like Git) gives you a safety net and a collaboration mechanism, regardless of project size."},
-      {q:"What does \"readable code\" primarily optimize for?", opts:["Making the compiler run as fast as possible","Being easy for humans, not just the computer, to understand and maintain","Using the fewest characters possible","Avoiding the use of functions"], a:1, d:"easy", ex:"Code is read far more often than it's written; optimizing for a human reader pays off every time someone revisits it."},
-      {q:"What is \"technical debt\"?", opts:["Money owed to a software vendor","The implied cost of extra future rework caused by choosing a quick or easy solution now instead of a better one","A penalty charged for late code deployments","A type of licensing fee for open-source libraries"], a:1, d:"easy", ex:"Like financial debt, technical debt can be taken on deliberately, but it accrues \"interest\" in the form of harder future changes if left unpaid."},
-      {q:"What is \"code review\"?", opts:["An automated tool that rewrites code for you","A process where other developers examine proposed changes before they're merged, to catch bugs and share knowledge","A yearly performance evaluation for engineers","A tool that measures how many lines of code were written"], a:1, d:"intermediate", ex:"Code review (often via a pull request) catches issues early and spreads context about the change across the team."},
-      {q:"What does \"separation of concerns\" mean?", opts:["Splitting a team into separate departments","Structuring code so different responsibilities live in different, loosely coupled parts","Writing all code in a single large file for simplicity","Avoiding comments so concerns don't clutter the code"], a:1, d:"intermediate", ex:"Keeping distinct responsibilities — like data access, business logic, and display — apart makes each part easier to change independently."},
-      {q:"Why is premature optimization generally discouraged?", opts:["Optimization is always unnecessary","It spends effort optimizing code before knowing where the actual performance bottlenecks are, often adding complexity for little benefit","Compilers already optimize everything perfectly","It makes code run slower in every case"], a:1, d:"hard", ex:"The common advice is to write clear code first, measure actual performance, and then optimize the parts that are proven to matter."}
+    "clean": [
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does the DRY principle stand for?",
+          "opts": [
+            "Design Rarely, Yield often",
+            "Don't Repeat Yourself",
+            "Data Rules Yearly",
+            "Debug Right Yesterday"
+          ],
+          "ex": "DRY encourages extracting repeated logic into a single reusable function or module instead of duplicating it."
+        },
+        "bn": {
+          "q": "DRY নীতি বলতে কী বোঝায়?",
+          "opts": [
+            "Design Rarely, Yield often",
+            "Don't Repeat Yourself (নিজেকে পুনরাবৃত্তি করবেন না)",
+            "Data Rules Yearly",
+            "Debug Right Yesterday"
+          ],
+          "ex": "DRY পুনরাবৃত্ত লজিক ডুপ্লিকেট না করে একটি একক পুনঃব্যবহারযোগ্য ফাংশন বা মডিউলে বের করে আনার পরামর্শ দেয়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 0,
+        "en": {
+          "q": "What does KISS mean in the context of coding practice?",
+          "opts": [
+            "Keep It Simple, Stupid — favor the simplest solution that works",
+            "Keep Iterating, Stay Solid",
+            "Key Interfaces, Shared State",
+            "Kill Idle Server Sessions"
+          ],
+          "ex": "KISS reminds you to avoid unnecessary complexity, patterns, or abstractions when a simpler solution does the job."
+        },
+        "bn": {
+          "q": "কোডিং চর্চার প্রসঙ্গে KISS মানে কী?",
+          "opts": [
+            "Keep It Simple, Stupid — যে সমাধান কাজ করে তার মধ্যে সবচেয়ে সহজটিকে প্রাধান্য দিন",
+            "Keep Iterating, Stay Solid",
+            "Key Interfaces, Shared State",
+            "Kill Idle Server Sessions"
+          ],
+          "ex": "সহজ সমাধান দিয়ে কাজ হয়ে গেলে অপ্রয়োজনীয় জটিলতা, প্যাটার্ন বা অ্যাবস্ট্র্যাকশন এড়াতে KISS মনে করিয়ে দেয়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is the \"Single Responsibility Principle\"?",
+          "opts": [
+            "Only one developer should ever touch a file",
+            "A function, class, or module should do one thing and have one reason to change",
+            "Every project should have a single main branch",
+            "Code should only ever call one external library"
+          ],
+          "ex": "Keeping each unit focused on one responsibility makes code easier to understand, test, and change safely."
+        },
+        "bn": {
+          "q": "\"সিঙ্গেল রেসপনসিবিলিটি প্রিন্সিপল\" (Single Responsibility Principle) কী?",
+          "opts": [
+            "একটি ফাইলে শুধু একজন ডেভেলপারেরই কাজ করা উচিত",
+            "একটি ফাংশন, ক্লাস বা মডিউলের একটিমাত্র কাজ থাকা উচিত এবং পরিবর্তনের একটিমাত্র কারণ থাকা উচিত",
+            "প্রতিটি প্রজেক্টে শুধু একটি main ব্রাঞ্চ থাকা উচিত",
+            "কোডে শুধু একটি বাহ্যিক লাইব্রেরি কল করা উচিত"
+          ],
+          "ex": "প্রতিটি ইউনিটকে একটি নির্দিষ্ট দায়িত্বে সীমাবদ্ধ রাখলে কোড বোঝা, পরীক্ষা করা এবং নিরাপদে পরিবর্তন করা সহজ হয়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "Why are meaningful variable and function names important?",
+          "opts": [
+            "They make the compiled binary smaller",
+            "They make code self-explanatory, reducing the need for extra comments to explain intent",
+            "They are required by all programming languages",
+            "They increase runtime performance"
+          ],
+          "ex": "Descriptive names (like totalPrice instead of x) let readers understand intent directly from the code."
+        },
+        "bn": {
+          "q": "অর্থপূর্ণ ভ্যারিয়েবল ও ফাংশনের নাম কেন গুরুত্বপূর্ণ?",
+          "opts": [
+            "এতে কম্পাইল করা বাইনারি ছোট হয়",
+            "এতে কোড নিজে থেকেই বোঝা যায়, ফলে উদ্দেশ্য ব্যাখ্যা করতে আলাদা কমেন্টের প্রয়োজন কমে যায়",
+            "সব প্রোগ্রামিং ভাষায় এটি বাধ্যতামূলক",
+            "এতে রানটাইম পারফরম্যান্স বৃদ্ধি পায়"
+          ],
+          "ex": "বর্ণনামূলক নাম (যেমন x-এর বদলে totalPrice) পাঠককে সরাসরি কোড থেকেই উদ্দেশ্য বুঝতে সাহায্য করে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is a \"code smell\"?",
+          "opts": [
+            "A compiler error that stops the build",
+            "A surface sign in code that usually points to a deeper design or maintainability problem",
+            "A type of code comment format",
+            "A security certificate warning"
+          ],
+          "ex": "Code smells (like duplicated logic or overly long functions) aren't bugs themselves, but they hint that refactoring may be needed."
+        },
+        "bn": {
+          "q": "\"কোড স্মেল\" (code smell) কী?",
+          "opts": [
+            "একটি কম্পাইলার এরর, যা বিল্ড থামিয়ে দেয়",
+            "কোডে দেখা একটি উপরিভাগের লক্ষণ, যা সাধারণত গভীর ডিজাইন বা রক্ষণাবেক্ষণ সমস্যার ইঙ্গিত দেয়",
+            "এক ধরনের কোড কমেন্ট ফরম্যাট",
+            "একটি নিরাপত্তা সার্টিফিকেট সতর্কবার্তা"
+          ],
+          "ex": "কোড স্মেল (যেমন ডুপ্লিকেট লজিক বা অতিরিক্ত দীর্ঘ ফাংশন) নিজে বাগ নয়, তবে এগুলো রিফ্যাক্টরিং প্রয়োজন কিনা তার ইঙ্গিত দেয়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "Why should comments generally explain \"why\" rather than \"what\"?",
+          "opts": [
+            "Comments explaining \"what\" are required by law in most style guides",
+            "Well-named, well-structured code already shows what it does, so comments are most valuable for non-obvious reasoning",
+            "\"Why\" comments compile faster",
+            "Comments should never be used at all"
+          ],
+          "ex": "If code needs a comment to explain what it does, clearer naming or structure is often the better fix; comments earn their place explaining non-obvious decisions."
+        },
+        "bn": {
+          "q": "কমেন্টে সাধারণত \"কী\" (what) না বলে \"কেন\" (why) ব্যাখ্যা করা উচিত কেন?",
+          "opts": [
+            "\"কী\" ব্যাখ্যা করা কমেন্ট বেশিরভাগ স্টাইল গাইডে আইনত বাধ্যতামূলক",
+            "ভালোভাবে নামকরণ করা ও গঠিত কোড এমনিতেই দেখায় এটি কী করে, তাই কমেন্ট সবচেয়ে মূল্যবান হয় যখন এটি অস্পষ্ট যুক্তি ব্যাখ্যা করে",
+            "\"কেন\" কমেন্ট দ্রুত কম্পাইল হয়",
+            "কমেন্ট কখনোই ব্যবহার করা উচিত নয়"
+          ],
+          "ex": "কোড কী করছে তা বোঝাতে যদি কমেন্ট প্রয়োজন হয়, তাহলে প্রায়ই আরও স্পষ্ট নামকরণ বা গঠন ভালো সমাধান; কমেন্ট তখনই সার্থক হয় যখন এটি অস্পষ্ট সিদ্ধান্তের কারণ ব্যাখ্যা করে।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What is \"refactoring\"?",
+          "opts": [
+            "Adding new features to an application",
+            "Restructuring existing code to improve its readability or design without changing its external behavior",
+            "Rewriting code in a different programming language",
+            "Deleting unused files from a repository"
+          ],
+          "ex": "Refactoring improves internal structure while keeping observable behavior the same — ideally backed by tests."
+        },
+        "bn": {
+          "q": "\"রিফ্যাক্টরিং\" (refactoring) কী?",
+          "opts": [
+            "একটি অ্যাপ্লিকেশনে নতুন ফিচার যোগ করা",
+            "বাহ্যিক আচরণ পরিবর্তন না করে বিদ্যমান কোডের পঠনযোগ্যতা বা ডিজাইন উন্নত করার জন্য পুনর্গঠন করা",
+            "কোড ভিন্ন একটি প্রোগ্রামিং ভাষায় পুনর্লিখন করা",
+            "রিপোজিটরি থেকে অব্যবহৃত ফাইল মুছে ফেলা"
+          ],
+          "ex": "রিফ্যাক্টরিং পর্যবেক্ষণযোগ্য আচরণ একই রেখে অভ্যন্তরীণ গঠন উন্নত করে — আদর্শভাবে টেস্টের মাধ্যমে সমর্থিত হয়ে।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What is a \"unit test\"?",
+          "opts": [
+            "A test that checks an entire application end-to-end through the UI",
+            "A test that verifies a small, isolated piece of code, like a single function, behaves correctly",
+            "A manual QA checklist run before release",
+            "A test that only checks server uptime"
+          ],
+          "ex": "Unit tests target small, isolated pieces of logic, making failures fast to locate and fix."
+        },
+        "bn": {
+          "q": "\"ইউনিট টেস্ট\" (unit test) কী?",
+          "opts": [
+            "UI-এর মাধ্যমে সম্পূর্ণ অ্যাপ্লিকেশন এন্ড-টু-এন্ড পরীক্ষা করা একটি টেস্ট",
+            "কোডের ছোট, পৃথক একটি অংশ (যেমন একটি ফাংশন) সঠিকভাবে কাজ করছে কিনা তা যাচাই করা একটি টেস্ট",
+            "রিলিজের আগে চালানো একটি ম্যানুয়াল QA চেকলিস্ট",
+            "শুধু সার্ভারের আপটাইম পরীক্ষা করে এমন একটি টেস্ট"
+          ],
+          "ex": "ইউনিট টেস্ট লজিকের ছোট, পৃথক অংশগুলোকে লক্ষ্য করে, ফলে ত্রুটি দ্রুত খুঁজে বের করে ঠিক করা যায়।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "What does YAGNI stand for?",
+          "opts": [
+            "Yield And Get Nothing Immediately",
+            "You Aren't Gonna Need It — avoid building functionality before it's actually needed",
+            "Yes, Add New Interfaces",
+            "Your API Grows, Not Improves"
+          ],
+          "ex": "YAGNI discourages speculative features or abstractions built for hypothetical future requirements that may never arrive."
+        },
+        "bn": {
+          "q": "YAGNI বলতে কী বোঝায়?",
+          "opts": [
+            "Yield And Get Nothing Immediately",
+            "You Aren't Gonna Need It — বাস্তবে প্রয়োজন হওয়ার আগে ফিচার তৈরি করা এড়িয়ে চলুন",
+            "Yes, Add New Interfaces",
+            "Your API Grows, Not Improves"
+          ],
+          "ex": "YAGNI এমন সাট্টা-ভিত্তিক ফিচার বা অ্যাবস্ট্র্যাকশন তৈরি করতে নিরুৎসাহিত করে, যা কল্পিত ভবিষ্যৎ প্রয়োজনের জন্য বানানো হয়, যা হয়তো কখনো আসবেই না।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "Why is version control considered a coding best practice?",
+          "opts": [
+            "It automatically fixes bugs in your code",
+            "It tracks history, enables collaboration, and lets you revert to previous working states",
+            "It replaces the need for testing",
+            "It is only useful for large teams, never solo projects"
+          ],
+          "ex": "Version control (like Git) gives you a safety net and a collaboration mechanism, regardless of project size."
+        },
+        "bn": {
+          "q": "ভার্সন কন্ট্রোলকে কেন একটি সেরা কোডিং চর্চা হিসেবে ধরা হয়?",
+          "opts": [
+            "এটি স্বয়ংক্রিয়ভাবে আপনার কোডের বাগ ঠিক করে দেয়",
+            "এটি হিস্ট্রি ট্র্যাক করে, সহযোগিতা সক্ষম করে এবং আগের কার্যকর অবস্থায় ফিরে যাওয়ার সুযোগ দেয়",
+            "এটি টেস্টিংয়ের প্রয়োজনীয়তা প্রতিস্থাপন করে",
+            "এটি শুধু বড় দলের জন্য উপযোগী, একক প্রজেক্টের জন্য নয়"
+          ],
+          "ex": "ভার্সন কন্ট্রোল (যেমন Git) প্রজেক্টের আকার নির্বিশেষে একটি নিরাপত্তা জাল এবং সহযোগিতার একটি ব্যবস্থা দেয়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What does \"readable code\" primarily optimize for?",
+          "opts": [
+            "Making the compiler run as fast as possible",
+            "Being easy for humans, not just the computer, to understand and maintain",
+            "Using the fewest characters possible",
+            "Avoiding the use of functions"
+          ],
+          "ex": "Code is read far more often than it's written; optimizing for a human reader pays off every time someone revisits it."
+        },
+        "bn": {
+          "q": "\"পঠনযোগ্য কোড\" মূলত কিসের জন্য অপ্টিমাইজ করা হয়?",
+          "opts": [
+            "কম্পাইলার যত দ্রুত সম্ভব চালানো",
+            "শুধু কম্পিউটার নয়, মানুষের জন্যও সহজে বোঝা ও রক্ষণাবেক্ষণ করা যায় এমন করা",
+            "সম্ভব সবচেয়ে কম অক্ষর ব্যবহার করা",
+            "ফাংশন ব্যবহার এড়িয়ে চলা"
+          ],
+          "ex": "কোড লেখার চেয়ে অনেক বেশিবার পড়া হয়; মানুষ-পাঠকের জন্য অপ্টিমাইজ করলে যখনই কেউ পরে সেটি দেখে তখনই এর সুফল পাওয়া যায়।"
+        }
+      },
+      {
+        "d": "easy",
+        "a": 1,
+        "en": {
+          "q": "What is \"technical debt\"?",
+          "opts": [
+            "Money owed to a software vendor",
+            "The implied cost of extra future rework caused by choosing a quick or easy solution now instead of a better one",
+            "A penalty charged for late code deployments",
+            "A type of licensing fee for open-source libraries"
+          ],
+          "ex": "Like financial debt, technical debt can be taken on deliberately, but it accrues \"interest\" in the form of harder future changes if left unpaid."
+        },
+        "bn": {
+          "q": "\"টেকনিক্যাল ডেট\" (technical debt) কী?",
+          "opts": [
+            "একটি সফটওয়্যার ভেন্ডরের কাছে পাওনা টাকা",
+            "এখন ভালো সমাধানের বদলে দ্রুত বা সহজ সমাধান বেছে নেওয়ার কারণে ভবিষ্যতে অতিরিক্ত কাজের যে সম্ভাব্য খরচ হয়",
+            "দেরিতে কোড ডিপ্লয় করার জন্য আরোপিত জরিমানা",
+            "ওপেন-সোর্স লাইব্রেরির জন্য এক ধরনের লাইসেন্স ফি"
+          ],
+          "ex": "আর্থিক ঋণের মতোই, টেকনিক্যাল ডেট ইচ্ছাকৃতভাবে নেওয়া যেতে পারে, তবে পরিশোধ না করলে ভবিষ্যতে কঠিন পরিবর্তনের আকারে এর \"সুদ\" জমতে থাকে।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What is \"code review\"?",
+          "opts": [
+            "An automated tool that rewrites code for you",
+            "A process where other developers examine proposed changes before they're merged, to catch bugs and share knowledge",
+            "A yearly performance evaluation for engineers",
+            "A tool that measures how many lines of code were written"
+          ],
+          "ex": "Code review (often via a pull request) catches issues early and spreads context about the change across the team."
+        },
+        "bn": {
+          "q": "\"কোড রিভিউ\" কী?",
+          "opts": [
+            "আপনার হয়ে কোড পুনর্লিখন করে দেয় এমন একটি স্বয়ংক্রিয় টুল",
+            "একটি প্রক্রিয়া, যেখানে অন্য ডেভেলপাররা মার্জের আগে প্রস্তাবিত পরিবর্তন পরীক্ষা করে দেখেন, যাতে বাগ ধরা পড়ে এবং জ্ঞান ভাগাভাগি হয়",
+            "প্রকৌশলীদের জন্য একটি বার্ষিক পারফরম্যান্স মূল্যায়ন",
+            "কত লাইন কোড লেখা হয়েছে তা মাপার একটি টুল"
+          ],
+          "ex": "কোড রিভিউ (প্রায়ই পুল রিকোয়েস্টের মাধ্যমে) সমস্যাগুলো আগেভাগে ধরতে সাহায্য করে এবং দলের মধ্যে পরিবর্তনের প্রসঙ্গ ছড়িয়ে দেয়।"
+        }
+      },
+      {
+        "d": "intermediate",
+        "a": 1,
+        "en": {
+          "q": "What does \"separation of concerns\" mean?",
+          "opts": [
+            "Splitting a team into separate departments",
+            "Structuring code so different responsibilities live in different, loosely coupled parts",
+            "Writing all code in a single large file for simplicity",
+            "Avoiding comments so concerns don't clutter the code"
+          ],
+          "ex": "Keeping distinct responsibilities — like data access, business logic, and display — apart makes each part easier to change independently."
+        },
+        "bn": {
+          "q": "\"সেপারেশন অব কনসার্নস\" (separation of concerns) মানে কী?",
+          "opts": [
+            "একটি দলকে আলাদা আলাদা বিভাগে ভাগ করা",
+            "কোডকে এমনভাবে গঠন করা যাতে বিভিন্ন দায়িত্ব ভিন্ন ভিন্ন, ঢিলেভাবে সংযুক্ত অংশে থাকে",
+            "সরলতার জন্য সব কোড একটি বড় ফাইলে লেখা",
+            "কমেন্ট এড়িয়ে চলা, যাতে কোড জটিল না হয়"
+          ],
+          "ex": "ডেটা অ্যাক্সেস, বিজনেস লজিক এবং প্রদর্শনের মতো ভিন্ন দায়িত্বগুলো আলাদা রাখলে প্রতিটি অংশ স্বাধীনভাবে পরিবর্তন করা সহজ হয়।"
+        }
+      },
+      {
+        "d": "hard",
+        "a": 1,
+        "en": {
+          "q": "Why is premature optimization generally discouraged?",
+          "opts": [
+            "Optimization is always unnecessary",
+            "It spends effort optimizing code before knowing where the actual performance bottlenecks are, often adding complexity for little benefit",
+            "Compilers already optimize everything perfectly",
+            "It makes code run slower in every case"
+          ],
+          "ex": "The common advice is to write clear code first, measure actual performance, and then optimize the parts that are proven to matter."
+        },
+        "bn": {
+          "q": "\"অকাল অপ্টিমাইজেশন\" (premature optimization) কেন সাধারণত নিরুৎসাহিত করা হয়?",
+          "opts": [
+            "অপ্টিমাইজেশন সবসময়ই অপ্রয়োজনীয়",
+            "প্রকৃত পারফরম্যান্স বাধা কোথায় তা না জেনেই কোড অপ্টিমাইজ করায় সময় ব্যয় হয়, যা প্রায়ই সামান্য সুবিধার জন্য অতিরিক্ত জটিলতা যোগ করে",
+            "কম্পাইলার এমনিতেই সবকিছু নিখুঁতভাবে অপ্টিমাইজ করে",
+            "এটি সবসময় কোডকে ধীর করে দেয়"
+          ],
+          "ex": "সাধারণ পরামর্শ হলো আগে স্পষ্ট কোড লেখা, প্রকৃত পারফরম্যান্স পরিমাপ করা, তারপর যেসব অংশ প্রমাণিতভাবে গুরুত্বপূর্ণ শুধু সেগুলো অপ্টিমাইজ করা।"
+        }
+      }
     ]
   };
 
-  var CAT_LABEL = {claude:"Claude Code", git:"Git & GitHub", terminal:"Terminal", clean:"Clean Code"};
   var CAT_ORDER = ["claude","git","terminal","clean"];
-  var DIFF_LABEL = {easy:"Easy", intermediate:"Intermediate", hard:"Hard", mixed:"Mixed"};
+  var CAT_LABEL = {
+    en: {claude:"Claude Code", git:"Git & GitHub", terminal:"Terminal", clean:"Clean Code"},
+    bn: {claude:"Claude Code", git:"Git ও GitHub", terminal:"টার্মিনাল", clean:"ক্লিন কোড"}
+  };
+  var DIFF_LABEL = {
+    en: {easy:"Easy", intermediate:"Intermediate", hard:"Hard", mixed:"Mixed"},
+    bn: {easy:"সহজ", intermediate:"মাঝারি", hard:"কঠিন", mixed:"মিশ্র"}
+  };
 
-  var state = { pool: [], idx: 0, score: 0, answers: [], selectedLen: "all", selectedDifficulty: "mixed" };
+  var STRINGS = {
+    en: {
+      title: "Dev Fundamentals Quiz",
+      lede: "60 questions on Claude Code, Git & GitHub, the terminal, and clean-code practices — freshly shuffled (questions and answer order) every time you play. Pick your categories, pick a length, and go.",
+      questionsSuffix: " questions",
+      difficultyLabel: "Difficulty",
+      lengthLabel: "Quiz length",
+      lenAll: "All",
+      startBtn: "Start quiz",
+      homeBtn: "← Home",
+      themeBtn: "theme",
+      langBtn: "বাংলা",
+      discardBtn: "Discard",
+      resumeBtn: "Resume",
+      nextBtn: "Next",
+      seeResultsBtn: "See results",
+      correctPrefix: "Correct.",
+      incorrectPrefix: "Not quite.",
+      showReview: "Show answer review ▾",
+      hideReview: "Hide answer review ▴",
+      youAnswered: "You answered:",
+      correctAnswerLabel: "Correct:",
+      retakeBtn: "Retake same quiz",
+      newQuizBtn: "New quiz",
+      footerCredit: "EngiMind · built with Claude Code",
+      bestScorePrefix: function(pct){ return "Best score so far: " + pct + "%"; },
+      resumeTemplate: function(idx, total, score){ return "Quiz in progress — question " + idx + " of " + total + " (score so far: " + score + "). Resume or discard it?"; },
+      poolHintTemplate: function(available, used){ return available + (available === 1 ? " question" : " questions") + " match this setup — quiz will use " + used + "."; },
+      resultFracTemplate: function(score, total){ return score + " / " + total + " correct"; },
+      verdictPerfect: "Perfect run.",
+      verdictStrong: "Strong grasp of the fundamentals.",
+      verdictSolid: "Solid start — a bit more practice will help.",
+      verdictRetry: "Worth another pass through the material."
+    },
+    bn: {
+      title: "ডেভেলপার ফান্ডামেন্টালস কুইজ",
+      lede: "Claude Code, Git ও GitHub, টার্মিনাল এবং ক্লিন কোড চর্চার উপর ৬০টি প্রশ্ন — প্রতিবার খেলার সময় প্রশ্ন ও উত্তরের ক্রম নতুন করে সাজানো হয়। ক্যাটেগরি ও দৈর্ঘ্য বেছে নিয়ে শুরু করুন।",
+      questionsSuffix: "টি প্রশ্ন",
+      difficultyLabel: "কঠিনতার স্তর",
+      lengthLabel: "কুইজের দৈর্ঘ্য",
+      lenAll: "সব",
+      startBtn: "কুইজ শুরু করুন",
+      homeBtn: "← হোম",
+      themeBtn: "থিম",
+      langBtn: "English",
+      discardBtn: "বাদ দিন",
+      resumeBtn: "আবার শুরু করুন",
+      nextBtn: "পরবর্তী",
+      seeResultsBtn: "ফলাফল দেখুন",
+      correctPrefix: "সঠিক।",
+      incorrectPrefix: "ঠিক হয়নি।",
+      showReview: "উত্তর পর্যালোচনা দেখুন ▾",
+      hideReview: "পর্যালোচনা লুকান ▴",
+      youAnswered: "আপনার উত্তর:",
+      correctAnswerLabel: "সঠিক উত্তর:",
+      retakeBtn: "একই কুইজ আবার দিন",
+      newQuizBtn: "নতুন কুইজ",
+      footerCredit: "EngiMind · Claude Code দিয়ে তৈরি",
+      bestScorePrefix: function(pct){ return "এখন পর্যন্ত সেরা স্কোর: " + pct + "%"; },
+      resumeTemplate: function(idx, total, score){ return "একটি কুইজ চলমান আছে — প্রশ্ন " + idx + "/" + total + " (এখন পর্যন্ত স্কোর: " + score + ")। আবার শুরু করবেন নাকি বাদ দেবেন?"; },
+      poolHintTemplate: function(available, used){ return available + "টি প্রশ্ন এই নির্বাচনে মিলেছে — কুইজে থাকবে " + used + "টি।"; },
+      resultFracTemplate: function(score, total){ return score + " / " + total + " সঠিক"; },
+      verdictPerfect: "নিখুঁত ফলাফল।",
+      verdictStrong: "মৌলিক বিষয়গুলোতে দারুণ দখল।",
+      verdictSolid: "শুরুটা ভালো — আরেকটু অনুশীলন করলে আরও ভালো হবে।",
+      verdictRetry: "বিষয়গুলো আরেকবার ঝালিয়ে নেওয়া দরকার।"
+    }
+  };
+
+  var state = { pool: [], idx: 0, score: 0, answers: [], selectedLen: "all", selectedDifficulty: "mixed", lang: "en" };
 
   var el = {
     start: document.getElementById("start"),
@@ -471,7 +1927,8 @@
     reviewList: document.getElementById("review-list"),
     retryBtn: document.getElementById("retry-btn"),
     restartBtn: document.getElementById("restart-btn"),
-    themeToggle: document.getElementById("theme-toggle")
+    themeToggle: document.getElementById("theme-toggle"),
+    langToggle: document.getElementById("lang-toggle")
   };
 
   function shuffle(arr){
@@ -495,12 +1952,7 @@
     if (cats.length === 0) cats = CAT_ORDER.slice();
     var available = buildPool(cats, "all", state.selectedDifficulty).length;
     var lenLabel = state.selectedLen === "all" ? available : Math.min(Number(state.selectedLen), available);
-    el.poolHint.textContent = available + " question" + (available === 1 ? "" : "s") + " match this setup — quiz will use " + lenLabel + ".";
-  }
-
-  function shuffleOptions(opts, correctIdx){
-    var order = shuffle(opts.map(function(_, i){ return i; }));
-    return { opts: order.map(function(i){ return opts[i]; }), a: order.indexOf(correctIdx) };
+    el.poolHint.textContent = STRINGS[state.lang].poolHintTemplate(available, lenLabel);
   }
 
   function buildPool(cats, len, difficulty){
@@ -508,8 +1960,13 @@
     cats.forEach(function(c){
       (QUESTIONS[c] || []).forEach(function(item){
         if (difficulty !== "mixed" && item.d !== difficulty) return;
-        var shuffled = shuffleOptions(item.opts, item.a);
-        pool.push({ cat: c, q: item.q, opts: shuffled.opts, a: shuffled.a, d: item.d, ex: item.ex });
+        var order = shuffle(item.en.opts.map(function(_, i){ return i; }));
+        var newA = order.indexOf(item.a);
+        pool.push({
+          cat: c, d: item.d, a: newA,
+          en: { q: item.en.q, opts: order.map(function(i){ return item.en.opts[i]; }), ex: item.en.ex },
+          bn: { q: item.bn.q, opts: order.map(function(i){ return item.bn.opts[i]; }), ex: item.bn.ex }
+        });
       });
     });
     pool = shuffle(pool);
@@ -533,7 +1990,7 @@
     var b = readBest();
     if (b) {
       el.bestScore.hidden = false;
-      el.bestScore.textContent = "Best score so far: " + b.pct + "%";
+      el.bestScore.textContent = STRINGS[state.lang].bestScorePrefix(b.pct);
     }
   }
 
@@ -543,7 +2000,7 @@
     try {
       localStorage.setItem(PROGRESS_KEY, JSON.stringify({
         pool: state.pool, idx: state.idx, score: state.score, answers: state.answers,
-        selectedLen: state.selectedLen, selectedDifficulty: state.selectedDifficulty
+        selectedLen: state.selectedLen, selectedDifficulty: state.selectedDifficulty, lang: state.lang
       }));
     } catch (e) {}
   }
@@ -561,17 +2018,21 @@
     var p = loadProgress();
     if (p && p.pool && p.pool.length && p.idx < p.pool.length) {
       el.resumeBanner.hidden = false;
-      el.resumeText.textContent = "Quiz in progress — question " + (p.idx + 1) + " of " + p.pool.length + " (score so far: " + p.score + "). Resume or discard it?";
+      el.resumeText.textContent = STRINGS[state.lang].resumeTemplate(p.idx + 1, p.pool.length, p.score);
     } else {
       el.resumeBanner.hidden = true;
     }
   }
 
-  function pauseQuiz(){
+  function revertUnconfirmedAnswer(){
     if (state.answers.length > state.idx) {
       var popped = state.answers.pop();
       if (popped.correct) state.score--;
     }
+  }
+
+  function pauseQuiz(){
+    revertUnconfirmedAnswer();
     if (state.pool.length && state.idx < state.pool.length) saveProgress();
     else clearProgress();
   }
@@ -583,6 +2044,37 @@
     showBest();
     updatePoolHint();
     showResumeIfAny();
+  }
+
+  function applyStaticLanguage(){
+    var lang = state.lang;
+    var t = STRINGS[lang];
+    document.getElementById("t-title").textContent = t.title;
+    document.getElementById("t-lede").textContent = t.lede;
+    document.getElementById("t-cat-claude").textContent = CAT_LABEL[lang].claude;
+    document.getElementById("t-cat-git").textContent = CAT_LABEL[lang].git;
+    document.getElementById("t-cat-terminal").textContent = CAT_LABEL[lang].terminal;
+    document.getElementById("t-cat-clean").textContent = CAT_LABEL[lang].clean;
+    document.getElementById("t-count-claude").textContent = "15" + t.questionsSuffix;
+    document.getElementById("t-count-git").textContent = "15" + t.questionsSuffix;
+    document.getElementById("t-count-terminal").textContent = "15" + t.questionsSuffix;
+    document.getElementById("t-count-clean").textContent = "15" + t.questionsSuffix;
+    document.getElementById("t-diff-label").textContent = t.difficultyLabel;
+    document.getElementById("t-diff-easy").textContent = DIFF_LABEL[lang].easy;
+    document.getElementById("t-diff-intermediate").textContent = DIFF_LABEL[lang].intermediate;
+    document.getElementById("t-diff-hard").textContent = DIFF_LABEL[lang].hard;
+    document.getElementById("t-diff-mixed").textContent = DIFF_LABEL[lang].mixed;
+    document.getElementById("t-length-label").textContent = t.lengthLabel;
+    document.getElementById("t-len-all").textContent = t.lenAll;
+    document.getElementById("t-footer").textContent = t.footerCredit;
+    el.startBtn.textContent = t.startBtn;
+    el.homeBtn.textContent = t.homeBtn;
+    el.themeToggle.textContent = t.themeBtn;
+    el.langToggle.textContent = t.langBtn;
+    el.discardBtn.textContent = t.discardBtn;
+    el.resumeBtn.textContent = t.resumeBtn;
+    el.retryBtn.textContent = t.retakeBtn;
+    el.restartBtn.textContent = t.newQuizBtn;
   }
 
   function showScreen(name){
@@ -607,21 +2099,23 @@
 
   function renderQuestion(){
     var item = state.pool[state.idx];
-    el.qTag.textContent = CAT_LABEL[item.cat];
-    el.qDiff.textContent = DIFF_LABEL[item.d];
+    var lang = state.lang;
+    var t = STRINGS[lang];
+    el.qTag.textContent = CAT_LABEL[lang][item.cat];
+    el.qDiff.textContent = DIFF_LABEL[lang][item.d];
     el.qDiff.className = "tag tag-" + item.d;
     el.qCounter.textContent = (state.idx + 1) + " / " + state.pool.length;
     el.pathLabel.textContent = "engimind@quiz:~$ question " + (state.idx + 1);
     el.progressFill.style.width = ((state.idx) / state.pool.length * 100) + "%";
-    el.questionText.textContent = item.q;
+    el.questionText.textContent = item[lang].q;
     el.explain.classList.add("hidden-init");
     el.explain.textContent = "";
     el.nextBtn.disabled = true;
-    el.nextBtn.textContent = (state.idx === state.pool.length - 1) ? "See results" : "Next";
+    el.nextBtn.textContent = (state.idx === state.pool.length - 1) ? t.seeResultsBtn : t.nextBtn;
 
     el.options.innerHTML = "";
     var keys = ["A","B","C","D"];
-    item.opts.forEach(function(optText, i){
+    item[lang].opts.forEach(function(optText, i){
       var b = document.createElement("button");
       b.className = "option";
       b.type = "button";
@@ -633,6 +2127,7 @@
 
   function selectOption(i){
     var item = state.pool[state.idx];
+    var lang = state.lang;
     var correct = i === item.a;
     var buttons = el.options.querySelectorAll(".option");
     buttons.forEach(function(b, idx){
@@ -641,10 +2136,10 @@
       if (idx === i && !correct) b.classList.add("incorrect");
     });
     if (correct) state.score++;
-    state.answers.push({ q: item.q, cat: item.cat, chosen: i, correctIdx: item.a, correct: correct, opts: item.opts, ex: item.ex });
+    state.answers.push({ poolIdx: state.idx, cat: item.cat, chosen: i, correctIdx: item.a, correct: correct });
 
     el.explain.classList.remove("hidden-init");
-    el.explain.innerHTML = "<b>" + (correct ? "Correct." : "Not quite.") + "</b> " + item.ex;
+    el.explain.innerHTML = "<b>" + (correct ? STRINGS[lang].correctPrefix : STRINGS[lang].incorrectPrefix) + "</b> " + item[lang].ex;
     el.nextBtn.disabled = false;
   }
 
@@ -659,17 +2154,19 @@
     }
   }
 
-  function finishQuiz(){
+  function renderResultsScreen(){
+    var lang = state.lang;
+    var t = STRINGS[lang];
     var total = state.pool.length;
     var pct = Math.round((state.score / total) * 100);
     el.resultPct.textContent = pct + "%";
-    el.resultFrac.textContent = state.score + " / " + total + " correct";
+    el.resultFrac.textContent = t.resultFracTemplate(state.score, total);
 
     var verdict;
-    if (pct === 100) verdict = "Perfect run.";
-    else if (pct >= 80) verdict = "Strong grasp of the fundamentals.";
-    else if (pct >= 50) verdict = "Solid start — a bit more practice will help.";
-    else verdict = "Worth another pass through the material.";
+    if (pct === 100) verdict = t.verdictPerfect;
+    else if (pct >= 80) verdict = t.verdictStrong;
+    else if (pct >= 50) verdict = t.verdictSolid;
+    else verdict = t.verdictRetry;
     el.resultVerdict.textContent = verdict;
 
     var byCat = {};
@@ -688,7 +2185,7 @@
       var row = document.createElement("div");
       row.className = "bd-row";
       row.innerHTML =
-        '<span class="bd-label">' + CAT_LABEL[c] + '</span>' +
+        '<span class="bd-label">' + CAT_LABEL[lang][c] + '</span>' +
         '<span class="bd-track"><span class="bd-fill" style="width:' + p + '%"></span></span>' +
         '<span class="bd-val">' + d.correct + '/' + d.total + '</span>';
       el.breakdown.appendChild(row);
@@ -696,21 +2193,28 @@
 
     el.reviewList.innerHTML = "";
     state.answers.forEach(function(a, i){
+      var item = state.pool[a.poolIdx];
       var div = document.createElement("div");
       div.className = "review-item";
-      var chosenText = a.opts[a.chosen];
-      var correctText = a.opts[a.correctIdx];
+      var chosenText = item[lang].opts[a.chosen];
+      var correctText = item[lang].opts[a.correctIdx];
       var ansHtml = a.correct
-        ? '<div class="ra right">✓ You answered: ' + chosenText + '</div>'
-        : '<div class="ra wrong">✗ You answered: ' + chosenText + '</div><div class="ra right">✓ Correct: ' + correctText + '</div>';
+        ? '<div class="ra right">✓ ' + t.youAnswered + ' ' + chosenText + '</div>'
+        : '<div class="ra wrong">✗ ' + t.youAnswered + ' ' + chosenText + '</div><div class="ra right">✓ ' + t.correctAnswerLabel + ' ' + correctText + '</div>';
       div.innerHTML =
-        '<div class="rq">' + (i + 1) + '. ' + a.q + '</div>' +
+        '<div class="rq">' + (i + 1) + '. ' + item[lang].q + '</div>' +
         ansHtml +
-        '<div class="rex">' + a.ex + '</div>';
+        '<div class="rex">' + item[lang].ex + '</div>';
       el.reviewList.appendChild(div);
     });
+    el.reviewToggle.textContent = el.reviewList.hidden ? t.showReview : t.hideReview;
+  }
+
+  function finishQuiz(){
+    var total = state.pool.length;
+    var pct = Math.round((state.score / total) * 100);
     el.reviewList.hidden = true;
-    el.reviewToggle.textContent = "Show answer review ▾";
+    renderResultsScreen();
 
     el.pathLabel.textContent = "engimind@quiz:~$ results";
     writeBest(pct);
@@ -741,6 +2245,10 @@
     state.answers = p.answers;
     state.selectedLen = p.selectedLen;
     state.selectedDifficulty = p.selectedDifficulty;
+    if (p.lang === "en" || p.lang === "bn") {
+      state.lang = p.lang;
+      applyStaticLanguage();
+    }
     showScreen("quiz");
     renderQuestion();
   });
@@ -757,7 +2265,7 @@
   el.reviewToggle.addEventListener("click", function(){
     var hidden = el.reviewList.hidden;
     el.reviewList.hidden = !hidden;
-    el.reviewToggle.textContent = hidden ? "Hide answer review ▴" : "Show answer review ▾";
+    el.reviewToggle.textContent = hidden ? STRINGS[state.lang].hideReview : STRINGS[state.lang].showReview;
   });
 
   el.lengthGroup.addEventListener("click", function(e){
@@ -788,6 +2296,28 @@
     else root.setAttribute("data-theme", "dark");
   });
 
+  el.langToggle.addEventListener("click", function(){
+    state.lang = state.lang === "en" ? "bn" : "en";
+    try { localStorage.setItem("engimind_quiz_lang", state.lang); } catch (e) {}
+    applyStaticLanguage();
+    updatePoolHint();
+    showBest();
+    showResumeIfAny();
+    if (!el.quiz.hidden) {
+      revertUnconfirmedAnswer();
+      renderQuestion();
+      saveProgress();
+    } else if (!el.results.hidden) {
+      renderResultsScreen();
+    }
+  });
+
+  try {
+    var savedLang = localStorage.getItem("engimind_quiz_lang");
+    if (savedLang === "en" || savedLang === "bn") state.lang = savedLang;
+  } catch (e) {}
+
+  applyStaticLanguage();
   showBest();
   updatePoolHint();
   showResumeIfAny();
