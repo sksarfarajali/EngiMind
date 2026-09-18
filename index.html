@@ -138,14 +138,23 @@
   .cat-card .label{font-weight:600; font-size:14px;}
   .cat-card .count{display:block; color:var(--muted); font-size:12px; font-family:"JetBrains Mono",monospace; margin-top:2px;}
 
-  .row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:24px;}
-  .length-group{display:flex; gap:8px;}
+  .field-block{margin-bottom:18px;}
+  .field-label{display:block; font-size:13px; color:var(--muted); margin-bottom:9px;}
+  .row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px;}
+  .length-group{display:flex; gap:8px; flex-wrap:wrap;}
   .chip{
     font-family:"JetBrains Mono",monospace; font-size:13px; padding:7px 13px;
     border-radius:999px; border:1px solid var(--border); background:var(--surface-2);
     color:var(--muted); cursor:pointer;
   }
   .chip.active{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
+  .diff-group .chip{display:inline-flex; align-items:center; gap:7px;}
+  .diff-group .chip::before{content:""; width:7px; height:7px; border-radius:50%; background:currentColor; opacity:.6;}
+  .diff-group .chip.active::before{opacity:1;}
+  .diff-easy{color:var(--good);} .diff-easy.active{background:var(--good); border-color:var(--good); color:#0b0e14;}
+  .diff-intermediate{color:var(--accent-2);} .diff-intermediate.active{background:var(--accent-2); border-color:var(--accent-2); color:#1b2130;}
+  .diff-hard{color:var(--bad);} .diff-hard.active{background:var(--bad); border-color:var(--bad); color:#ffffff;}
+  .pool-hint{font-size:12px; color:var(--muted); margin-bottom:22px;}
 
   .btn{
     font-family:"Space Grotesk",system-ui,sans-serif; font-weight:600; font-size:15px;
@@ -164,6 +173,9 @@
     font-family:"JetBrains Mono",monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
     padding:4px 9px; border-radius:6px; background:var(--surface-2); color:var(--accent); border:1px solid var(--border);
   }
+  .tag.tag-easy{color:var(--good); border-color:var(--good);}
+  .tag.tag-intermediate{color:var(--accent-2); border-color:var(--accent-2);}
+  .tag.tag-hard{color:var(--bad); border-color:var(--bad);}
   .counter{font-family:"JetBrains Mono",monospace; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums;}
   .progress-track{height:6px; background:var(--surface-2); border-radius:99px; overflow:hidden; margin-bottom:22px;}
   .progress-fill{height:100%; background:var(--accent); width:0%; transition:width .25s ease;}
@@ -257,6 +269,16 @@
         <label class="cat-card"><input type="checkbox" value="clean" checked><span><span class="label">Clean Code</span><span class="count">10 questions</span></span></label>
       </div>
 
+      <div class="field-block">
+        <span class="field-label">Difficulty</span>
+        <div class="length-group diff-group" id="difficulty-group">
+          <button class="chip diff-easy" data-diff="easy">Easy</button>
+          <button class="chip diff-intermediate" data-diff="intermediate">Intermediate</button>
+          <button class="chip diff-hard" data-diff="hard">Hard</button>
+          <button class="chip active" data-diff="mixed">Mixed</button>
+        </div>
+      </div>
+
       <div class="row">
         <span style="font-size:13px; color:var(--muted);">Quiz length</span>
         <div class="length-group" id="length-group">
@@ -265,6 +287,7 @@
           <button class="chip active" data-len="all">All</button>
         </div>
       </div>
+      <div class="pool-hint mono" id="pool-hint"></div>
 
       <button class="btn" id="start-btn" type="button">Start quiz</button>
       <div class="best-score" id="best-score" hidden></div>
@@ -273,7 +296,10 @@
     <!-- QUIZ -->
     <section id="quiz" hidden>
       <div class="quiz-head">
-        <span class="tag" id="q-tag">CATEGORY</span>
+        <span style="display:flex; gap:8px;">
+          <span class="tag" id="q-tag">CATEGORY</span>
+          <span class="tag" id="q-diff">LEVEL</span>
+        </span>
         <span class="counter" id="q-counter">1 / 10</span>
       </div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
@@ -314,59 +340,60 @@
 
   var QUESTIONS = {
     claude: [
-      {q:"In Claude Code, what is a \"slash command\"?", opts:["A prompt template you invoke by typing /<name> in the chat","A keyboard shortcut for switching terminal tabs","A type of Git branch naming convention","A CSS selector used in the settings UI"], a:0, ex:"Slash commands (like /init or /review) are typed at the start of a message and insert a prompt template or trigger a built-in action."},
-      {q:"Which built-in slash command generates a CLAUDE.md file documenting your codebase?", opts:["/docs","/init","/build","/scan"], a:1, ex:"/init inspects the repo and writes a CLAUDE.md with project-specific context for future sessions."},
-      {q:"What best describes \"hooks\" in Claude Code?", opts:["Visual themes for the terminal UI","Shortcuts for renaming files","Deterministic scripts that fire automatically at defined lifecycle events, like before a tool runs","A way to bookmark chat messages"], a:2, ex:"Hooks are automatic commands (command, http, prompt, or agent handlers) triggered by lifecycle events such as a tool call or session start — no manual typing required."},
-      {q:"What is a \"subagent\" used for in Claude Code?", opts:["Formatting code automatically on save","A delegated, isolated agent loop with its own context window for a specific task","A backup copy of your git history","A linter plugin for JavaScript"], a:1, ex:"Subagents are spawned when a task needs its own separate context window, not just a different prompt — useful for research or isolated multi-step work."},
-      {q:"Which slash command is used to review the current diff or pending changes for bugs?", opts:["/diff-check","/code-review","/lint","/patch"], a:1, ex:"/code-review (also available as /review) analyzes the current changes and reports correctness issues."},
-      {q:"What does the /compact command do?", opts:["Deletes old commits from the repo","Minifies JavaScript files in the project","Compresses and summarizes the conversation to free up context window space","Shrinks image assets automatically"], a:2, ex:"/compact summarizes prior conversation so a long session can continue without running out of context."},
-      {q:"What is an MCP server, in the context of Claude Code?", opts:["A Minecraft plugin server","A Model Context Protocol server that exposes external tools or data sources Claude can call","A backup mail server for notifications","A type of Git remote"], a:1, ex:"MCP (Model Context Protocol) servers let Claude Code connect to external tools, APIs, and data sources through a standard interface."},
-      {q:"Where do teams typically store project-specific instructions and context for Claude Code?", opts:["package.json","CLAUDE.md",".gitignore","settings.ini"], a:1, ex:"CLAUDE.md is the conventional file for persistent, project-specific guidance that Claude Code reads for context."},
-      {q:"What does a Claude Code \"plugin\" bundle together?", opts:["Only slash commands, nothing else","Skills, subagents, slash commands, hooks, output styles, and MCP server definitions as one installable unit","A single CSS theme file","Only MCP servers"], a:1, ex:"A plugin is a versioned bundle that can ship multiple extension types together so they install and update as one unit."},
-      {q:"Which command lets you check current context window usage in a session?", opts:["/usage","/context","/memory","/tokens"], a:1, ex:"/context reports how much of the context window is currently used, helping you decide when to compact."}
+      {q:"In Claude Code, what is a \"slash command\"?", opts:["A prompt template you invoke by typing /<name> in the chat","A keyboard shortcut for switching terminal tabs","A type of Git branch naming convention","A CSS selector used in the settings UI"], a:0, d:"easy", ex:"Slash commands (like /init or /review) are typed at the start of a message and insert a prompt template or trigger a built-in action."},
+      {q:"Which built-in slash command generates a CLAUDE.md file documenting your codebase?", opts:["/docs","/init","/build","/scan"], a:1, d:"easy", ex:"/init inspects the repo and writes a CLAUDE.md with project-specific context for future sessions."},
+      {q:"What best describes \"hooks\" in Claude Code?", opts:["Visual themes for the terminal UI","Shortcuts for renaming files","Deterministic scripts that fire automatically at defined lifecycle events, like before a tool runs","A way to bookmark chat messages"], a:2, d:"intermediate", ex:"Hooks are automatic commands (command, http, prompt, or agent handlers) triggered by lifecycle events such as a tool call or session start — no manual typing required."},
+      {q:"What is a \"subagent\" used for in Claude Code?", opts:["Formatting code automatically on save","A delegated, isolated agent loop with its own context window for a specific task","A backup copy of your git history","A linter plugin for JavaScript"], a:1, d:"hard", ex:"Subagents are spawned when a task needs its own separate context window, not just a different prompt — useful for research or isolated multi-step work."},
+      {q:"Which slash command is used to review the current diff or pending changes for bugs?", opts:["/diff-check","/code-review","/lint","/patch"], a:1, d:"easy", ex:"/code-review (also available as /review) analyzes the current changes and reports correctness issues."},
+      {q:"What does the /compact command do?", opts:["Deletes old commits from the repo","Minifies JavaScript files in the project","Compresses and summarizes the conversation to free up context window space","Shrinks image assets automatically"], a:2, d:"intermediate", ex:"/compact summarizes prior conversation so a long session can continue without running out of context."},
+      {q:"What is an MCP server, in the context of Claude Code?", opts:["A Minecraft plugin server","A Model Context Protocol server that exposes external tools or data sources Claude can call","A backup mail server for notifications","A type of Git remote"], a:1, d:"hard", ex:"MCP (Model Context Protocol) servers let Claude Code connect to external tools, APIs, and data sources through a standard interface."},
+      {q:"Where do teams typically store project-specific instructions and context for Claude Code?", opts:["package.json","CLAUDE.md",".gitignore","settings.ini"], a:1, d:"easy", ex:"CLAUDE.md is the conventional file for persistent, project-specific guidance that Claude Code reads for context."},
+      {q:"What does a Claude Code \"plugin\" bundle together?", opts:["Only slash commands, nothing else","Skills, subagents, slash commands, hooks, output styles, and MCP server definitions as one installable unit","A single CSS theme file","Only MCP servers"], a:1, d:"hard", ex:"A plugin is a versioned bundle that can ship multiple extension types together so they install and update as one unit."},
+      {q:"Which command lets you check current context window usage in a session?", opts:["/usage","/context","/memory","/tokens"], a:1, d:"intermediate", ex:"/context reports how much of the context window is currently used, helping you decide when to compact."}
     ],
     git: [
-      {q:"What is a \"commit\" in Git?", opts:["A request to delete a branch","A snapshot of your project's changes saved to the repository history","A live sync between two remote servers","A GitHub-only feature with no local equivalent"], a:1, ex:"Each commit captures the state of your files at that moment, building a traceable project history."},
-      {q:"Which command creates a new branch and switches to it in a single step?", opts:["git branch -m <name>","git checkout -b <name>","git merge <name>","git log --branch <name>"], a:1, ex:"git checkout -b <name> (or the newer git switch -c <name>) creates and checks out a branch in one command."},
-      {q:"What is a \"pull request\" on GitHub?", opts:["A request to download the entire repository","A proposal to merge changes from one branch into another, opened for review before merging","A command that force-pushes to main","An automatic backup of your local commits"], a:1, ex:"Pull requests let collaborators discuss and review a set of changes before they're merged into the target branch."},
-      {q:"What does git clone do?", opts:["Deletes a remote repository","Copies a remote repository, including its full history, to your local machine","Creates a duplicate branch in the same repo","Compresses your repository into a zip file"], a:1, ex:"git clone downloads a full copy of a repository (history included) and sets up the remote for you."},
-      {q:"What's the key difference between git fetch and git pull?", opts:["They are exactly the same command","fetch downloads changes without merging them; pull fetches and then merges into your current branch","fetch only works on GitHub, pull only works locally","pull deletes remote branches, fetch does not"], a:1, ex:"git fetch updates your local view of the remote without touching your working branch; git pull does that plus a merge (or rebase)."},
-      {q:"What is a \"merge conflict\"?", opts:["A GitHub billing error","When two people star the same repository","When Git can't automatically reconcile changes to the same lines and needs manual resolution","A warning shown when a commit message is too long"], a:2, ex:"Conflicts happen when overlapping changes can't be auto-merged; you resolve them by editing the conflicted files and committing the result."},
-      {q:"What does a .gitignore file do?", opts:["Lists commit messages to reject","Specifies files and patterns that Git should not track or stage","Encrypts sensitive files automatically","Blocks specific GitHub users from a repo"], a:1, ex:"Patterns in .gitignore (like node_modules/ or .env) tell Git to leave matching files untracked."},
-      {q:"What is \"GitHub Flow\"?", opts:["A diagramming tool built into GitHub","A lightweight workflow: branch, commit, open a pull request, review, then merge to main","A paid GitHub subscription tier","A CI/CD pipeline exclusive to Actions"], a:1, ex:"GitHub Flow is a simple branch-per-feature workflow well suited to continuous delivery."},
-      {q:"Which command stages changes so they're included in the next commit?", opts:["git stage-all","git commit --stage","git add","git track"], a:2, ex:"git add moves changes from the working directory into the staging area, ready to be committed."},
-      {q:"What is a \"fork\" on GitHub?", opts:["A temporary branch that auto-deletes after 24 hours","A personal copy of someone else's repository under your own account, so you can change it independently","A tool for merging two unrelated repositories","A type of GitHub Action trigger"], a:1, ex:"Forking creates your own copy of a repo, commonly used to contribute to projects you don't have write access to."}
+      {q:"What is a \"commit\" in Git?", opts:["A request to delete a branch","A snapshot of your project's changes saved to the repository history","A live sync between two remote servers","A GitHub-only feature with no local equivalent"], a:1, d:"easy", ex:"Each commit captures the state of your files at that moment, building a traceable project history."},
+      {q:"Which command creates a new branch and switches to it in a single step?", opts:["git branch -m <name>","git checkout -b <name>","git merge <name>","git log --branch <name>"], a:1, d:"intermediate", ex:"git checkout -b <name> (or the newer git switch -c <name>) creates and checks out a branch in one command."},
+      {q:"What is a \"pull request\" on GitHub?", opts:["A request to download the entire repository","A proposal to merge changes from one branch into another, opened for review before merging","A command that force-pushes to main","An automatic backup of your local commits"], a:1, d:"intermediate", ex:"Pull requests let collaborators discuss and review a set of changes before they're merged into the target branch."},
+      {q:"What does git clone do?", opts:["Deletes a remote repository","Copies a remote repository, including its full history, to your local machine","Creates a duplicate branch in the same repo","Compresses your repository into a zip file"], a:1, d:"easy", ex:"git clone downloads a full copy of a repository (history included) and sets up the remote for you."},
+      {q:"What's the key difference between git fetch and git pull?", opts:["They are exactly the same command","fetch downloads changes without merging them; pull fetches and then merges into your current branch","fetch only works on GitHub, pull only works locally","pull deletes remote branches, fetch does not"], a:1, d:"hard", ex:"git fetch updates your local view of the remote without touching your working branch; git pull does that plus a merge (or rebase)."},
+      {q:"What is a \"merge conflict\"?", opts:["A GitHub billing error","When two people star the same repository","When Git can't automatically reconcile changes to the same lines and needs manual resolution","A warning shown when a commit message is too long"], a:2, d:"hard", ex:"Conflicts happen when overlapping changes can't be auto-merged; you resolve them by editing the conflicted files and committing the result."},
+      {q:"What does a .gitignore file do?", opts:["Lists commit messages to reject","Specifies files and patterns that Git should not track or stage","Encrypts sensitive files automatically","Blocks specific GitHub users from a repo"], a:1, d:"easy", ex:"Patterns in .gitignore (like node_modules/ or .env) tell Git to leave matching files untracked."},
+      {q:"What is \"GitHub Flow\"?", opts:["A diagramming tool built into GitHub","A lightweight workflow: branch, commit, open a pull request, review, then merge to main","A paid GitHub subscription tier","A CI/CD pipeline exclusive to Actions"], a:1, d:"hard", ex:"GitHub Flow is a simple branch-per-feature workflow well suited to continuous delivery."},
+      {q:"Which command stages changes so they're included in the next commit?", opts:["git stage-all","git commit --stage","git add","git track"], a:2, d:"easy", ex:"git add moves changes from the working directory into the staging area, ready to be committed."},
+      {q:"What is a \"fork\" on GitHub?", opts:["A temporary branch that auto-deletes after 24 hours","A personal copy of someone else's repository under your own account, so you can change it independently","A tool for merging two unrelated repositories","A type of GitHub Action trigger"], a:1, d:"intermediate", ex:"Forking creates your own copy of a repo, commonly used to contribute to projects you don't have write access to."}
     ],
     terminal: [
-      {q:"What does the pwd command print?", opts:["A list of installed packages","The full path of the current working directory","The current user's password hash","The permissions of the current folder"], a:1, ex:"pwd stands for \"print working directory\" and shows where you currently are in the filesystem."},
-      {q:"Which flag makes ls also show hidden files (those starting with a dot)?", opts:["ls -a","ls -h","ls -x","ls -r"], a:0, ex:"ls -a lists all entries, including hidden dotfiles like .gitignore or .env."},
-      {q:"What does cd .. do?", opts:["Deletes the current directory","Copies the current directory","Moves up one level to the parent directory","Creates a directory named \"..\""], a:2, ex:"\"..\" refers to the parent directory, so cd .. moves you up one level in the folder tree."},
-      {q:"What does grep \"error\" file.log do?", opts:["Deletes every line containing \"error\"","Searches file.log and prints lines that contain \"error\"","Renames file.log to \"error\"","Counts the total lines in file.log"], a:1, ex:"grep searches text for a pattern and prints the matching lines — a core tool for scanning logs."},
-      {q:"What does chmod +x script.sh do?", opts:["Compresses script.sh","Makes script.sh executable","Deletes script.sh permanently","Moves script.sh to the trash"], a:1, ex:"chmod changes file permissions; +x adds the execute permission so the script can be run directly."},
-      {q:"What does mkdir -p a/b/c do?", opts:["Fails if folder \"a\" doesn't already exist","Creates nested folders a/b/c, creating any missing parent folders along the way","Deletes folders a, b, and c","Lists the contents of folder a/b/c"], a:1, ex:"The -p flag makes mkdir create all necessary parent directories instead of erroring out."},
-      {q:"What does the pipe operator | do in the terminal?", opts:["Comments out the rest of the line","Runs two unrelated commands in parallel with no connection","Sends the output of one command as input to the next command","Redirects output to a file only"], a:2, ex:"Piping chains commands together, e.g. cat file.log | grep error, so data flows from one to the next."},
-      {q:"Why is rm -rf considered risky?", opts:["It only works on Windows","It recursively and forcibly deletes files/directories with no confirmation, which can permanently destroy data if misused","It renames files instead of deleting them","It requires an internet connection to run"], a:1, ex:"-r deletes recursively and -f skips confirmation prompts, so a wrong path can wipe out data with no undo."},
-      {q:"What does the cat command do?", opts:["Displays the contents of a file in the terminal","Compiles source code","Checks disk space usage","Lists active network connections"], a:0, ex:"cat (short for \"concatenate\") prints one or more files' contents to standard output."},
-      {q:"What does the top (or ps) command show?", opts:["A list of recently deleted files","Currently running processes and their resource usage","The contents of the clipboard","A history of terminal commands you've typed"], a:1, ex:"top and ps report live information about running processes, including CPU and memory usage."}
+      {q:"What does the pwd command print?", opts:["A list of installed packages","The full path of the current working directory","The current user's password hash","The permissions of the current folder"], a:1, d:"easy", ex:"pwd stands for \"print working directory\" and shows where you currently are in the filesystem."},
+      {q:"Which flag makes ls also show hidden files (those starting with a dot)?", opts:["ls -a","ls -h","ls -x","ls -r"], a:0, d:"easy", ex:"ls -a lists all entries, including hidden dotfiles like .gitignore or .env."},
+      {q:"What does cd .. do?", opts:["Deletes the current directory","Copies the current directory","Moves up one level to the parent directory","Creates a directory named \"..\""], a:2, d:"easy", ex:"\"..\" refers to the parent directory, so cd .. moves you up one level in the folder tree."},
+      {q:"What does grep \"error\" file.log do?", opts:["Deletes every line containing \"error\"","Searches file.log and prints lines that contain \"error\"","Renames file.log to \"error\"","Counts the total lines in file.log"], a:1, d:"intermediate", ex:"grep searches text for a pattern and prints the matching lines — a core tool for scanning logs."},
+      {q:"What does chmod +x script.sh do?", opts:["Compresses script.sh","Makes script.sh executable","Deletes script.sh permanently","Moves script.sh to the trash"], a:1, d:"intermediate", ex:"chmod changes file permissions; +x adds the execute permission so the script can be run directly."},
+      {q:"What does mkdir -p a/b/c do?", opts:["Fails if folder \"a\" doesn't already exist","Creates nested folders a/b/c, creating any missing parent folders along the way","Deletes folders a, b, and c","Lists the contents of folder a/b/c"], a:1, d:"intermediate", ex:"The -p flag makes mkdir create all necessary parent directories instead of erroring out."},
+      {q:"What does the pipe operator | do in the terminal?", opts:["Comments out the rest of the line","Runs two unrelated commands in parallel with no connection","Sends the output of one command as input to the next command","Redirects output to a file only"], a:2, d:"hard", ex:"Piping chains commands together, e.g. cat file.log | grep error, so data flows from one to the next."},
+      {q:"Why is rm -rf considered risky?", opts:["It only works on Windows","It recursively and forcibly deletes files/directories with no confirmation, which can permanently destroy data if misused","It renames files instead of deleting them","It requires an internet connection to run"], a:1, d:"hard", ex:"-r deletes recursively and -f skips confirmation prompts, so a wrong path can wipe out data with no undo."},
+      {q:"What does the cat command do?", opts:["Displays the contents of a file in the terminal","Compiles source code","Checks disk space usage","Lists active network connections"], a:0, d:"easy", ex:"cat (short for \"concatenate\") prints one or more files' contents to standard output."},
+      {q:"What does the top (or ps) command show?", opts:["A list of recently deleted files","Currently running processes and their resource usage","The contents of the clipboard","A history of terminal commands you've typed"], a:1, d:"hard", ex:"top and ps report live information about running processes, including CPU and memory usage."}
     ],
     clean: [
-      {q:"What does the DRY principle stand for?", opts:["Design Rarely, Yield often","Don't Repeat Yourself","Data Rules Yearly","Debug Right Yesterday"], a:1, ex:"DRY encourages extracting repeated logic into a single reusable function or module instead of duplicating it."},
-      {q:"What does KISS mean in the context of coding practice?", opts:["Keep It Simple, Stupid — favor the simplest solution that works","Keep Iterating, Stay Solid","Key Interfaces, Shared State","Kill Idle Server Sessions"], a:0, ex:"KISS reminds you to avoid unnecessary complexity, patterns, or abstractions when a simpler solution does the job."},
-      {q:"What is the \"Single Responsibility Principle\"?", opts:["Only one developer should ever touch a file","A function, class, or module should do one thing and have one reason to change","Every project should have a single main branch","Code should only ever call one external library"], a:1, ex:"Keeping each unit focused on one responsibility makes code easier to understand, test, and change safely."},
-      {q:"Why are meaningful variable and function names important?", opts:["They make the compiled binary smaller","They make code self-explanatory, reducing the need for extra comments to explain intent","They are required by all programming languages","They increase runtime performance"], a:1, ex:"Descriptive names (like totalPrice instead of x) let readers understand intent directly from the code."},
-      {q:"What is a \"code smell\"?", opts:["A compiler error that stops the build","A surface sign in code that usually points to a deeper design or maintainability problem","A type of code comment format","A security certificate warning"], a:1, ex:"Code smells (like duplicated logic or overly long functions) aren't bugs themselves, but they hint that refactoring may be needed."},
-      {q:"Why should comments generally explain \"why\" rather than \"what\"?", opts:["Comments explaining \"what\" are required by law in most style guides","Well-named, well-structured code already shows what it does, so comments are most valuable for non-obvious reasoning","\"Why\" comments compile faster","Comments should never be used at all"], a:1, ex:"If code needs a comment to explain what it does, clearer naming or structure is often the better fix; comments earn their place explaining non-obvious decisions."},
-      {q:"What is \"refactoring\"?", opts:["Adding new features to an application","Restructuring existing code to improve its readability or design without changing its external behavior","Rewriting code in a different programming language","Deleting unused files from a repository"], a:1, ex:"Refactoring improves internal structure while keeping observable behavior the same — ideally backed by tests."},
-      {q:"What is a \"unit test\"?", opts:["A test that checks an entire application end-to-end through the UI","A test that verifies a small, isolated piece of code, like a single function, behaves correctly","A manual QA checklist run before release","A test that only checks server uptime"], a:1, ex:"Unit tests target small, isolated pieces of logic, making failures fast to locate and fix."},
-      {q:"What does YAGNI stand for?", opts:["Yield And Get Nothing Immediately","You Aren't Gonna Need It — avoid building functionality before it's actually needed","Yes, Add New Interfaces","Your API Grows, Not Improves"], a:1, ex:"YAGNI discourages speculative features or abstractions built for hypothetical future requirements that may never arrive."},
-      {q:"Why is version control considered a coding best practice?", opts:["It automatically fixes bugs in your code","It tracks history, enables collaboration, and lets you revert to previous working states","It replaces the need for testing","It is only useful for large teams, never solo projects"], a:1, ex:"Version control (like Git) gives you a safety net and a collaboration mechanism, regardless of project size."}
+      {q:"What does the DRY principle stand for?", opts:["Design Rarely, Yield often","Don't Repeat Yourself","Data Rules Yearly","Debug Right Yesterday"], a:1, d:"easy", ex:"DRY encourages extracting repeated logic into a single reusable function or module instead of duplicating it."},
+      {q:"What does KISS mean in the context of coding practice?", opts:["Keep It Simple, Stupid — favor the simplest solution that works","Keep Iterating, Stay Solid","Key Interfaces, Shared State","Kill Idle Server Sessions"], a:0, d:"easy", ex:"KISS reminds you to avoid unnecessary complexity, patterns, or abstractions when a simpler solution does the job."},
+      {q:"What is the \"Single Responsibility Principle\"?", opts:["Only one developer should ever touch a file","A function, class, or module should do one thing and have one reason to change","Every project should have a single main branch","Code should only ever call one external library"], a:1, d:"intermediate", ex:"Keeping each unit focused on one responsibility makes code easier to understand, test, and change safely."},
+      {q:"Why are meaningful variable and function names important?", opts:["They make the compiled binary smaller","They make code self-explanatory, reducing the need for extra comments to explain intent","They are required by all programming languages","They increase runtime performance"], a:1, d:"easy", ex:"Descriptive names (like totalPrice instead of x) let readers understand intent directly from the code."},
+      {q:"What is a \"code smell\"?", opts:["A compiler error that stops the build","A surface sign in code that usually points to a deeper design or maintainability problem","A type of code comment format","A security certificate warning"], a:1, d:"intermediate", ex:"Code smells (like duplicated logic or overly long functions) aren't bugs themselves, but they hint that refactoring may be needed."},
+      {q:"Why should comments generally explain \"why\" rather than \"what\"?", opts:["Comments explaining \"what\" are required by law in most style guides","Well-named, well-structured code already shows what it does, so comments are most valuable for non-obvious reasoning","\"Why\" comments compile faster","Comments should never be used at all"], a:1, d:"intermediate", ex:"If code needs a comment to explain what it does, clearer naming or structure is often the better fix; comments earn their place explaining non-obvious decisions."},
+      {q:"What is \"refactoring\"?", opts:["Adding new features to an application","Restructuring existing code to improve its readability or design without changing its external behavior","Rewriting code in a different programming language","Deleting unused files from a repository"], a:1, d:"easy", ex:"Refactoring improves internal structure while keeping observable behavior the same — ideally backed by tests."},
+      {q:"What is a \"unit test\"?", opts:["A test that checks an entire application end-to-end through the UI","A test that verifies a small, isolated piece of code, like a single function, behaves correctly","A manual QA checklist run before release","A test that only checks server uptime"], a:1, d:"hard", ex:"Unit tests target small, isolated pieces of logic, making failures fast to locate and fix."},
+      {q:"What does YAGNI stand for?", opts:["Yield And Get Nothing Immediately","You Aren't Gonna Need It — avoid building functionality before it's actually needed","Yes, Add New Interfaces","Your API Grows, Not Improves"], a:1, d:"hard", ex:"YAGNI discourages speculative features or abstractions built for hypothetical future requirements that may never arrive."},
+      {q:"Why is version control considered a coding best practice?", opts:["It automatically fixes bugs in your code","It tracks history, enables collaboration, and lets you revert to previous working states","It replaces the need for testing","It is only useful for large teams, never solo projects"], a:1, d:"hard", ex:"Version control (like Git) gives you a safety net and a collaboration mechanism, regardless of project size."}
     ]
   };
 
   var CAT_LABEL = {claude:"Claude Code", git:"Git & GitHub", terminal:"Terminal", clean:"Clean Code"};
   var CAT_ORDER = ["claude","git","terminal","clean"];
+  var DIFF_LABEL = {easy:"Easy", intermediate:"Intermediate", hard:"Hard", mixed:"Mixed"};
 
-  var state = { pool: [], idx: 0, score: 0, answers: [], selectedLen: "all" };
+  var state = { pool: [], idx: 0, score: 0, answers: [], selectedLen: "all", selectedDifficulty: "mixed" };
 
   var el = {
     start: document.getElementById("start"),
@@ -374,10 +401,13 @@
     results: document.getElementById("results"),
     cats: document.getElementById("cats"),
     lengthGroup: document.getElementById("length-group"),
+    diffGroup: document.getElementById("difficulty-group"),
+    poolHint: document.getElementById("pool-hint"),
     startBtn: document.getElementById("start-btn"),
     bestScore: document.getElementById("best-score"),
     pathLabel: document.getElementById("path-label"),
     qTag: document.getElementById("q-tag"),
+    qDiff: document.getElementById("q-diff"),
     qCounter: document.getElementById("q-counter"),
     progressFill: document.getElementById("progress-fill"),
     questionText: document.getElementById("question-text"),
@@ -411,11 +441,20 @@
     return out;
   }
 
-  function buildPool(cats, len){
+  function updatePoolHint(){
+    var cats = getSelectedCategories();
+    if (cats.length === 0) cats = CAT_ORDER.slice();
+    var available = buildPool(cats, "all", state.selectedDifficulty).length;
+    var lenLabel = state.selectedLen === "all" ? available : Math.min(Number(state.selectedLen), available);
+    el.poolHint.textContent = available + " question" + (available === 1 ? "" : "s") + " match this setup — quiz will use " + lenLabel + ".";
+  }
+
+  function buildPool(cats, len, difficulty){
     var pool = [];
     cats.forEach(function(c){
       (QUESTIONS[c] || []).forEach(function(item){
-        pool.push({ cat: c, q: item.q, opts: item.opts, a: item.a, ex: item.ex });
+        if (difficulty !== "mixed" && item.d !== difficulty) return;
+        pool.push({ cat: c, q: item.q, opts: item.opts, a: item.a, d: item.d, ex: item.ex });
       });
     });
     pool = shuffle(pool);
@@ -452,7 +491,7 @@
   function startQuiz(){
     var cats = getSelectedCategories();
     if (cats.length === 0) { cats = CAT_ORDER.slice(); }
-    state.pool = buildPool(cats, state.selectedLen);
+    state.pool = buildPool(cats, state.selectedLen, state.selectedDifficulty);
     state.idx = 0;
     state.score = 0;
     state.answers = [];
@@ -463,6 +502,8 @@
   function renderQuestion(){
     var item = state.pool[state.idx];
     el.qTag.textContent = CAT_LABEL[item.cat];
+    el.qDiff.textContent = DIFF_LABEL[item.d];
+    el.qDiff.className = "tag tag-" + item.d;
     el.qCounter.textContent = (state.idx + 1) + " / " + state.pool.length;
     el.pathLabel.textContent = "engimind@quiz:~$ question " + (state.idx + 1);
     el.progressFill.style.width = ((state.idx) / state.pool.length * 100) + "%";
@@ -576,6 +617,7 @@
     el.pathLabel.textContent = "engimind@quiz:~$ start";
     showScreen("start");
     showBest();
+    updatePoolHint();
   });
 
   el.reviewToggle.addEventListener("click", function(){
@@ -590,7 +632,19 @@
     el.lengthGroup.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("active"); });
     chip.classList.add("active");
     state.selectedLen = chip.getAttribute("data-len");
+    updatePoolHint();
   });
+
+  el.diffGroup.addEventListener("click", function(e){
+    var chip = e.target.closest(".chip");
+    if (!chip) return;
+    el.diffGroup.querySelectorAll(".chip").forEach(function(c){ c.classList.remove("active"); });
+    chip.classList.add("active");
+    state.selectedDifficulty = chip.getAttribute("data-diff");
+    updatePoolHint();
+  });
+
+  el.cats.addEventListener("change", updatePoolHint);
 
   el.themeToggle.addEventListener("click", function(){
     var root = document.documentElement;
@@ -601,6 +655,7 @@
   });
 
   showBest();
+  updatePoolHint();
 })();
 </script>
 
