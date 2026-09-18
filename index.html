@@ -111,6 +111,12 @@
     flex-shrink:0;
   }
   .theme-toggle:hover{color:var(--text); border-color:var(--accent);}
+  .home-btn{
+    background:none; border:1px solid var(--border); color:var(--text);
+    border-radius:7px; padding:4px 10px; font-size:11.5px; cursor:pointer; font-family:"JetBrains Mono",monospace;
+    flex-shrink:0;
+  }
+  .home-btn:hover{color:var(--accent); border-color:var(--accent);}
 
   .content{padding:28px 26px 30px;}
   @media (max-width:480px){ .content{padding:20px 16px 24px;} }
@@ -124,6 +130,15 @@
   .eyebrow::before{content:"$"; color:var(--accent-2);}
   #start h1{font-size:clamp(26px,5vw,32px); margin-bottom:8px;}
   #start p.lede{color:var(--muted); font-size:15px; line-height:1.55; margin:0 0 24px;}
+
+  .resume-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    background:var(--surface-2); border:1px solid var(--accent); border-radius:10px;
+    padding:13px 15px; margin-bottom:22px;
+  }
+  .resume-banner .resume-text{font-size:13.5px; line-height:1.45;}
+  .resume-banner .resume-actions{display:flex; gap:8px; flex-shrink:0;}
+  .resume-banner .btn{width:auto; padding:9px 15px; font-size:13.5px;}
 
   .cats{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px;}
   @media (max-width:480px){ .cats{grid-template-columns:1fr;} }
@@ -250,6 +265,7 @@
 <div class="app" id="app">
   <div class="titlebar">
     <div class="dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+    <button class="home-btn" id="home-btn" type="button" hidden>&larr; Home</button>
     <div class="path mono" id="path-label">engimind@quiz:~$ start</div>
     <button class="theme-toggle" id="theme-toggle" type="button">theme</button>
   </div>
@@ -261,6 +277,14 @@
       <div class="eyebrow">EngiMind</div>
       <h1>Dev Fundamentals Quiz</h1>
       <p class="lede">40 questions on Claude Code, Git &amp; GitHub, the terminal, and clean-code practices. Pick your categories, pick a length, and go.</p>
+
+      <div class="resume-banner" id="resume-banner" hidden>
+        <div class="resume-text" id="resume-text"></div>
+        <div class="resume-actions">
+          <button class="btn secondary" id="discard-btn" type="button">Discard</button>
+          <button class="btn" id="resume-btn" type="button">Resume</button>
+        </div>
+      </div>
 
       <div class="cats" id="cats">
         <label class="cat-card"><input type="checkbox" value="claude" checked><span><span class="label">Claude Code</span><span class="count">10 questions</span></span></label>
@@ -405,6 +429,11 @@
     poolHint: document.getElementById("pool-hint"),
     startBtn: document.getElementById("start-btn"),
     bestScore: document.getElementById("best-score"),
+    resumeBanner: document.getElementById("resume-banner"),
+    resumeText: document.getElementById("resume-text"),
+    resumeBtn: document.getElementById("resume-btn"),
+    discardBtn: document.getElementById("discard-btn"),
+    homeBtn: document.getElementById("home-btn"),
     pathLabel: document.getElementById("path-label"),
     qTag: document.getElementById("q-tag"),
     qDiff: document.getElementById("q-diff"),
@@ -482,13 +511,63 @@
     }
   }
 
+  var PROGRESS_KEY = "engimind_quiz_progress";
+
+  function saveProgress(){
+    try {
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+        pool: state.pool, idx: state.idx, score: state.score, answers: state.answers,
+        selectedLen: state.selectedLen, selectedDifficulty: state.selectedDifficulty
+      }));
+    } catch (e) {}
+  }
+  function loadProgress(){
+    try {
+      var v = localStorage.getItem(PROGRESS_KEY);
+      return v ? JSON.parse(v) : null;
+    } catch (e) { return null; }
+  }
+  function clearProgress(){
+    try { localStorage.removeItem(PROGRESS_KEY); } catch (e) {}
+  }
+
+  function showResumeIfAny(){
+    var p = loadProgress();
+    if (p && p.pool && p.pool.length && p.idx < p.pool.length) {
+      el.resumeBanner.hidden = false;
+      el.resumeText.textContent = "Quiz in progress — question " + (p.idx + 1) + " of " + p.pool.length + " (score so far: " + p.score + "). Resume or discard it?";
+    } else {
+      el.resumeBanner.hidden = true;
+    }
+  }
+
+  function pauseQuiz(){
+    if (state.answers.length > state.idx) {
+      var popped = state.answers.pop();
+      if (popped.correct) state.score--;
+    }
+    if (state.pool.length && state.idx < state.pool.length) saveProgress();
+    else clearProgress();
+  }
+
+  function goHome(){
+    if (!el.quiz.hidden) pauseQuiz();
+    el.pathLabel.textContent = "engimind@quiz:~$ start";
+    showScreen("start");
+    showBest();
+    updatePoolHint();
+    showResumeIfAny();
+  }
+
   function showScreen(name){
     el.start.hidden = name !== "start";
     el.quiz.hidden = name !== "quiz";
     el.results.hidden = name !== "results";
+    el.homeBtn.hidden = name === "start";
   }
 
   function startQuiz(){
+    clearProgress();
     var cats = getSelectedCategories();
     if (cats.length === 0) { cats = CAT_ORDER.slice(); }
     state.pool = buildPool(cats, state.selectedLen, state.selectedDifficulty);
@@ -497,6 +576,7 @@
     state.answers = [];
     showScreen("quiz");
     renderQuestion();
+    saveProgress();
   }
 
   function renderQuestion(){
@@ -549,6 +629,7 @@
       finishQuiz();
     } else {
       renderQuestion();
+      saveProgress();
     }
   }
 
@@ -607,6 +688,7 @@
 
     el.pathLabel.textContent = "engimind@quiz:~$ results";
     writeBest(pct);
+    clearProgress();
     showScreen("results");
   }
 
@@ -614,10 +696,36 @@
   el.nextBtn.addEventListener("click", nextQuestion);
   el.retryBtn.addEventListener("click", startQuiz);
   el.restartBtn.addEventListener("click", function(){
+    clearProgress();
     el.pathLabel.textContent = "engimind@quiz:~$ start";
     showScreen("start");
     showBest();
     updatePoolHint();
+    showResumeIfAny();
+  });
+
+  el.homeBtn.addEventListener("click", goHome);
+
+  el.resumeBtn.addEventListener("click", function(){
+    var p = loadProgress();
+    if (!p) return;
+    state.pool = p.pool;
+    state.idx = p.idx;
+    state.score = p.score;
+    state.answers = p.answers;
+    state.selectedLen = p.selectedLen;
+    state.selectedDifficulty = p.selectedDifficulty;
+    showScreen("quiz");
+    renderQuestion();
+  });
+
+  el.discardBtn.addEventListener("click", function(){
+    clearProgress();
+    el.resumeBanner.hidden = true;
+  });
+
+  window.addEventListener("pagehide", function(){
+    if (!el.quiz.hidden) pauseQuiz();
   });
 
   el.reviewToggle.addEventListener("click", function(){
@@ -656,6 +764,7 @@
 
   showBest();
   updatePoolHint();
+  showResumeIfAny();
 })();
 </script>
 
